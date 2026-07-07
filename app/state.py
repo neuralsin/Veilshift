@@ -8,6 +8,8 @@ Figures are always regenerated from result data, never serialized as source of t
 """
 
 from __future__ import annotations
+
+SCHEMA_VERSION = 2  # Incremented from implicit v1 when OOF evaluation was added
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -422,12 +424,20 @@ class ExperimentState:
     """
     Complete experiment state. Every UI element traces to a field here.
     Serialization: metadata → JSON, arrays → NPZ, tabular → CSV.
+
+    SCHEMA v2: Added OOF evaluation result. Legacy experiments with
+    schema_version=1 contain leaked in-sample metrics and must NOT
+    be displayed as valid OOF evaluations.
     """
     # Identity
     experiment_id: str = field(default_factory=lambda: f"EXP-{uuid.uuid4().hex[:6].upper()}")
     experiment_name: str = "Untitled Experiment"
     timestamp: float = field(default_factory=time.time)
     seed: int = 42
+    schema_version: int = SCHEMA_VERSION
+
+    # Evaluation protocol
+    evaluation_protocol: str = "5-FOLD STRATIFIED OOF"
 
     # Scenario
     target_regime: TargetRegime = TargetRegime.STEALTH
@@ -455,14 +465,25 @@ class ExperimentState:
     degradation_result: DegradationResult = field(default_factory=DegradationResult)
     scaling_result: ScalingResult = field(default_factory=ScalingResult)
 
+    # OOF Evaluation Result — canonical source of scientific metrics
+    # This is populated by the OOF protocol and is the ONLY valid source
+    # of performance metrics for the UI.
+    oof_result: Optional[Any] = None  # Type: OOFEvaluationResult (from oof_protocol)
+
     # Combined feature/label arrays built by Module D
     feature_matrix: Optional[np.ndarray] = None
     feature_names: Optional[List[str]] = None
     labels: Optional[np.ndarray] = None
 
-    # Per-sensor trained classifiers (sklearn models, not serialized)
+    # Active model — trained on ALL data for interactive use.
+    # These are NOT used for scientific performance claims.
     sensor_classifiers: Optional[Dict[str, Any]] = None
     sensor_scores: Optional[Dict[str, np.ndarray]] = None
+    active_model_fusion_weights: Optional[Dict[str, float]] = None
+
+    # Evaluation fusion weights (mean ± SD across OOF folds)
+    evaluation_fusion_weights: Optional[Dict[str, float]] = None
+    evaluation_fusion_weights_std: Optional[Dict[str, float]] = None
 
     # Overall status
     status: ModuleStatus = ModuleStatus.NOT_CONFIGURED
@@ -484,6 +505,20 @@ class ExperimentState:
         if self.fusion_result.solver:
             return self.fusion_result.solver
         return SolverBackend.NEAL_SA.value
+
+    @property
+    def is_legacy_evaluation(self) -> bool:
+        """True if this experiment has leaked in-sample metrics (schema v1)."""
+        return getattr(self, 'schema_version', 1) < SCHEMA_VERSION
+
+    @property
+    def has_valid_oof(self) -> bool:
+        """True if OOF evaluation result exists and is valid."""
+        return (
+            self.oof_result is not None
+            and hasattr(self.oof_result, 'is_valid')
+            and self.oof_result.is_valid()
+        )
 
 
 # ============================================================

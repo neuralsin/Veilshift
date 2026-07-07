@@ -1,20 +1,16 @@
 """
-QT-2.23 — Pipeline Orchestrator
+QT-2.23 — Pipeline Orchestrator (v2 — OOF Evaluation)
 
 Chains all science modules (A→D→E→G→H→K→F→L) into a complete
 experimental pipeline. Each module's output feeds the next.
 Called by TaskManager for background execution.
 
-Module execution order per Section 8 of the build manual:
-1. A,B,C — Sensor simulations (parallelizable)
-2. D — Feature extraction (combines all sensor outputs)
-3. Train per-sensor classifiers
-4. E — CRLB initial weights
-5. G — QUBO feature selection
-6. H — Fusion optimization
-7. K — Evaluation (CV, bootstrap CI)
-8. F — Baseline comparison
-9. L — Contribution analysis
+SCHEMA v2 CHANGES:
+- Primary evaluation metrics now come from 5-fold stratified OOF protocol
+- Active model (full-data) is trained separately for interactive use
+- Baselines use identical fold assignments for fair comparison
+- All scientific performance claims derive from OOF predictions
+- In-sample metrics are NEVER displayed as evaluation performance
 """
 
 from __future__ import annotations
@@ -25,6 +21,7 @@ from typing import Any, Callable, Dict, List, Optional
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import StratifiedKFold
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -44,16 +41,22 @@ def run_full_pipeline(
     experiment: ExperimentState,
 ) -> ExperimentState:
     """
-    Execute the complete scientific pipeline.
+    Execute the complete scientific pipeline with OOF evaluation.
 
-    This is the function submitted to TaskManager for a full experiment run.
-    Each stage updates the experiment state in place and emits events.
+    Architecture:
+      Stages 1-4: Sensor simulation + feature extraction (unchanged physics)
+      Stage 5:    OOF evaluation (5-fold stratified, leakage-free)
+      Stage 6:    CRLB initial weights (label-independent, clean)
+      Stage 7:    Active model — full-data feature selection (for display)
+      Stage 8:    Active model — full-data fusion (for interactive use)
+      Stage 9:    Populate MetricsResult from OOF (primary UI metrics)
+      Stage 10:   OOF baseline comparison
     """
     exp = experiment
     exp_id = exp.experiment_id
     seed = exp.seed
 
-    total_stages = 10
+    total_stages = 11
     stage_num = 0
 
     def stage_progress(stage_name, fraction=0.0, message=""):
@@ -181,12 +184,21 @@ def run_full_pipeline(
         feature_progress,
     )
 
-    # Labels should match across datasets (all generated with same structure)
-    labels = radar_data["dataset_labels"]  # Same split: first half target, second half noise
+    labels = radar_data["dataset_labels"]
 
     exp.feature_matrix = feature_matrix
     exp.feature_names = feature_names
     exp.labels = labels
+
+    n_radar = len(radar_data["feature_names"])
+    n_thermal = len(thermal_data["feature_names"])
+    n_acoustic = len(acoustic_data["feature_names"])
+
+    sensor_feature_counts = {
+        "radar": n_radar,
+        "thermal": n_thermal,
+        "acoustic": n_acoustic,
+    }
 
     event_bus.publish(Event(
         event_type=EventType.FEATURE_EXTRACTION_COMPLETED,
@@ -196,56 +208,52 @@ def run_full_pipeline(
     ))
 
     # ========================================================
-    # STAGE 5: Train per-sensor classifiers
+    # STAGE 5: OOF EVALUATION (leakage-free)
     # ========================================================
     stage_num = 4
-    stage_progress("TRAINING SENSOR DETECTORS", 0.0, "Training per-sensor LR models")
+    stage_progress("OOF EVALUATION", 0.0, "5-fold stratified out-of-fold evaluation")
 
-    n_radar = len(radar_data["feature_names"])
-    n_thermal = len(thermal_data["feature_names"])
-    n_acoustic = len(acoustic_data["feature_names"])
+    from science.evaluation.oof_protocol import run_oof_evaluation
 
-    sensor_classifiers = {}
-    sensor_scores = {}
+    def oof_progress(stage="", progress=0.0, message=""):
+        stage_progress("OOF EVALUATION", progress, f"[OOF] {message}")
 
-    # Radar detector
-    clf_radar = LogisticRegression(max_iter=1000, random_state=seed)
-    clf_radar.fit(feature_matrix[:, :n_radar], labels)
-    sensor_scores["radar"] = clf_radar.predict_proba(feature_matrix[:, :n_radar])[:, 1]
-    sensor_classifiers["radar"] = clf_radar
+    oof_result = run_oof_evaluation(
+        feature_matrix=feature_matrix,
+        labels=labels,
+        feature_names=feature_names,
+        sensor_feature_counts=sensor_feature_counts,
+        n_splits=exp.evaluation_config.n_folds,
+        seed=seed,
+        n_bootstrap=exp.evaluation_config.n_bootstrap,
+        ci_level=exp.evaluation_config.ci_level,
+        k_target=exp.feature_config.k_target,
+        fs_alpha=exp.feature_config.alpha,
+        fs_beta=exp.feature_config.beta,
+        fs_gamma=exp.feature_config.gamma,
+        lam=exp.fusion_config.lam,
+        n_restarts=exp.fusion_config.n_restarts,
+        target_far=exp.fusion_config.target_far,
+        progress_callback=oof_progress,
+    )
 
-    stage_progress("TRAINING SENSOR DETECTORS", 0.33, "Radar detector trained")
+    exp.oof_result = oof_result
 
-    # Thermal detector
-    r_end = n_radar + n_thermal
-    clf_thermal = LogisticRegression(max_iter=1000, random_state=seed)
-    clf_thermal.fit(feature_matrix[:, n_radar:r_end], labels)
-    sensor_scores["thermal"] = clf_thermal.predict_proba(feature_matrix[:, n_radar:r_end])[:, 1]
-    sensor_classifiers["thermal"] = clf_thermal
-
-    stage_progress("TRAINING SENSOR DETECTORS", 0.66, "Thermal detector trained")
-
-    # Acoustic detector
-    a_end = r_end + n_acoustic
-    clf_acoustic = LogisticRegression(max_iter=1000, random_state=seed)
-    clf_acoustic.fit(feature_matrix[:, r_end:a_end], labels)
-    sensor_scores["acoustic"] = clf_acoustic.predict_proba(feature_matrix[:, r_end:a_end])[:, 1]
-    sensor_classifiers["acoustic"] = clf_acoustic
-
-    stage_progress("TRAINING SENSOR DETECTORS", 1.0, "All 3 sensor detectors trained")
-
-    exp.sensor_classifiers = sensor_classifiers
-    exp.sensor_scores = sensor_scores
+    # Store evaluation fusion weights (mean ± SD across folds)
+    exp.evaluation_fusion_weights = oof_result.mean_fusion_weights
+    exp.evaluation_fusion_weights_std = oof_result.std_fusion_weights
 
     event_bus.publish(Event(
-        event_type=EventType.SENSOR_MODELS_TRAINED,
-        source="TRAINING",
-        message=f"3 per-sensor detectors trained",
+        event_type=EventType.METRICS_RESULT_UPDATED,
+        source="OOF-EVALUATION",
+        message=f"OOF AUC={oof_result.auc:.4f} "
+                f"[{oof_result.bootstrap_ci['ci_lower']:.4f}–"
+                f"{oof_result.bootstrap_ci['ci_upper']:.4f}]",
         data={"experiment_id": exp_id},
     ))
 
     # ========================================================
-    # STAGE 6: CRLB Initial Weights (Module E)
+    # STAGE 6: CRLB Initial Weights (Module E) — label-independent
     # ========================================================
     stage_num = 5
     stage_progress("COMPUTING CRLB", 0.0, "Fisher Information analysis")
@@ -270,15 +278,16 @@ def run_full_pipeline(
     exp.crlb_result.status = ModuleStatus.COMPLETED
 
     # ========================================================
-    # STAGE 7: QUBO Feature Selection (Module G)
+    # STAGE 7: Active Model — Full-data Feature Selection (Module G)
+    # This is for display/interactive use, NOT for evaluation claims.
     # ========================================================
     stage_num = 6
-    stage_progress("BUILDING QUBO", 0.0, "MID-mRMR feature selection")
+    stage_progress("BUILDING QUBO (Active Model)", 0.0, "MID-mRMR feature selection")
 
     from science.qubo.module_g import run_feature_selection
 
     def qubo_progress(stage="", progress=0.0, message=""):
-        stage_progress("BUILDING QUBO", progress, message)
+        stage_progress("BUILDING QUBO (Active Model)", progress, message)
 
     fs_data = run_feature_selection(
         qubo_progress,
@@ -313,15 +322,40 @@ def run_full_pipeline(
     ))
 
     # ========================================================
-    # STAGE 8: Fusion Optimization (Module H)
+    # STAGE 8: Active Model — Full-data Fusion (Module H)
+    # For interactive sensor analysis, NOT for evaluation claims.
     # ========================================================
     stage_num = 7
-    stage_progress("OPTIMIZING FUSION", 0.0, "Rayleigh-LDA weight optimization")
+    stage_progress("OPTIMIZING FUSION (Active Model)", 0.0, "Full-data Rayleigh-LDA")
+
+    # Train per-sensor classifiers on ALL data (active model)
+    sensor_classifiers = {}
+    sensor_scores = {}
+    r_end = n_radar + n_thermal
+    a_end = r_end + n_acoustic
+
+    clf_radar = LogisticRegression(max_iter=1000, random_state=seed)
+    clf_radar.fit(feature_matrix[:, :n_radar], labels)
+    sensor_scores["radar"] = clf_radar.predict_proba(feature_matrix[:, :n_radar])[:, 1]
+    sensor_classifiers["radar"] = clf_radar
+
+    clf_thermal = LogisticRegression(max_iter=1000, random_state=seed)
+    clf_thermal.fit(feature_matrix[:, n_radar:r_end], labels)
+    sensor_scores["thermal"] = clf_thermal.predict_proba(feature_matrix[:, n_radar:r_end])[:, 1]
+    sensor_classifiers["thermal"] = clf_thermal
+
+    clf_acoustic = LogisticRegression(max_iter=1000, random_state=seed)
+    clf_acoustic.fit(feature_matrix[:, r_end:a_end], labels)
+    sensor_scores["acoustic"] = clf_acoustic.predict_proba(feature_matrix[:, r_end:a_end])[:, 1]
+    sensor_classifiers["acoustic"] = clf_acoustic
+
+    exp.sensor_classifiers = sensor_classifiers
+    exp.sensor_scores = sensor_scores
 
     from science.fusion.module_h import run_fusion_optimization
 
     def fusion_progress(stage="", progress=0.0, message=""):
-        stage_progress("OPTIMIZING FUSION", progress, message)
+        stage_progress("OPTIMIZING FUSION (Active Model)", progress, message)
 
     fusion_data = run_fusion_optimization(
         fusion_progress,
@@ -350,99 +384,101 @@ def run_full_pipeline(
     exp.fusion_result.fused_scores_h0 = fusion_data["fused_scores_h0"]
     exp.fusion_result.fused_scores_h1 = fusion_data["fused_scores_h1"]
     exp.fusion_result.status = ModuleStatus.COMPLETED
+    exp.active_model_fusion_weights = fusion_data["weights"]
 
     event_bus.publish(Event(
         event_type=EventType.FUSION_RESULT_UPDATED,
         source="FUSION",
-        message=f"J'={fusion_data['fisher_objective']:.4f}, w={fusion_data['weights']}",
+        message=f"Active model J'={fusion_data['fisher_objective']:.4f}",
         data={"experiment_id": exp_id},
     ))
 
     # ========================================================
-    # STAGE 9: Evaluation (Module K)
+    # STAGE 9: Populate MetricsResult from OOF predictions
+    # Primary UI metrics source — NOT from in-sample.
     # ========================================================
     stage_num = 8
-    stage_progress("EVALUATING", 0.0, "Bootstrap CI + full metrics")
-
-    from science.evaluation.module_k import compute_full_metrics
-
-    def eval_progress(stage="", progress=0.0, message=""):
-        stage_progress("EVALUATING", progress, message)
-
-    metrics_data = compute_full_metrics(
-        labels,
-        fusion_data["fused_scores"],
-        fusion_data["threshold"],
-        n_bootstrap=exp.evaluation_config.n_bootstrap,
-        ci_level=exp.evaluation_config.ci_level * 100,
-        seed=seed,
-        progress_callback=eval_progress,
-    )
+    stage_progress("POPULATING METRICS", 0.0, "Writing OOF metrics to MetricsResult")
 
     exp.metrics_result.auc = ConfidenceInterval(
-        point_estimate=metrics_data["auc"]["mean"],
-        ci_lower=metrics_data["auc"]["ci_lower"],
-        ci_upper=metrics_data["auc"]["ci_upper"],
+        point_estimate=oof_result.auc,
+        ci_lower=oof_result.bootstrap_ci["ci_lower"],
+        ci_upper=oof_result.bootstrap_ci["ci_upper"],
         n_bootstrap=exp.evaluation_config.n_bootstrap,
     )
     exp.metrics_result.detection_rate = ConfidenceInterval(
-        point_estimate=metrics_data["detection_rate"],
-        ci_lower=metrics_data["detection_rate"],
-        ci_upper=metrics_data["detection_rate"],
+        point_estimate=oof_result.aggregate_metrics.detection_rate,
+        ci_lower=oof_result.aggregate_metrics.detection_rate,
+        ci_upper=oof_result.aggregate_metrics.detection_rate,
     )
     exp.metrics_result.false_alarm_rate = ConfidenceInterval(
-        point_estimate=metrics_data["false_alarm_rate"],
-        ci_lower=metrics_data["false_alarm_rate"],
-        ci_upper=metrics_data["false_alarm_rate"],
+        point_estimate=oof_result.aggregate_metrics.false_alarm_rate,
+        ci_lower=oof_result.aggregate_metrics.false_alarm_rate,
+        ci_upper=oof_result.aggregate_metrics.false_alarm_rate,
     )
     exp.metrics_result.precision = ConfidenceInterval(
-        point_estimate=metrics_data["precision"],
-        ci_lower=metrics_data["precision"],
-        ci_upper=metrics_data["precision"],
+        point_estimate=oof_result.aggregate_metrics.precision,
+        ci_lower=oof_result.aggregate_metrics.precision,
+        ci_upper=oof_result.aggregate_metrics.precision,
     )
     exp.metrics_result.recall = ConfidenceInterval(
-        point_estimate=metrics_data["recall"],
-        ci_lower=metrics_data["recall"],
-        ci_upper=metrics_data["recall"],
+        point_estimate=oof_result.aggregate_metrics.recall,
+        ci_lower=oof_result.aggregate_metrics.recall,
+        ci_upper=oof_result.aggregate_metrics.recall,
     )
     exp.metrics_result.f1 = ConfidenceInterval(
-        point_estimate=metrics_data["f1"],
-        ci_lower=metrics_data["f1"],
-        ci_upper=metrics_data["f1"],
+        point_estimate=oof_result.aggregate_metrics.f1,
+        ci_lower=oof_result.aggregate_metrics.f1,
+        ci_upper=oof_result.aggregate_metrics.f1,
     )
-    exp.metrics_result.roc_fpr = metrics_data["roc_fpr"]
-    exp.metrics_result.roc_tpr = metrics_data["roc_tpr"]
-    exp.metrics_result.confusion_matrix = metrics_data["confusion_matrix"]
+    exp.metrics_result.roc_fpr = oof_result.roc_fpr
+    exp.metrics_result.roc_tpr = oof_result.roc_tpr
+    exp.metrics_result.confusion_matrix = np.array([
+        [oof_result.aggregate_metrics.tn, oof_result.aggregate_metrics.fp],
+        [oof_result.aggregate_metrics.fn, oof_result.aggregate_metrics.tp],
+    ])
     exp.metrics_result.status = ModuleStatus.COMPLETED
 
     event_bus.publish(Event(
         event_type=EventType.METRICS_RESULT_UPDATED,
         source="EVALUATION",
-        message=f"AUC={exp.metrics_result.auc}",
+        message=f"OOF AUC={exp.metrics_result.auc}",
         data={"experiment_id": exp_id},
     ))
 
     # ========================================================
-    # STAGE 10: Baseline Comparison (Module F)
+    # STAGE 10: OOF Baseline Comparison
+    # All baselines use the SAME outer fold assignments.
     # ========================================================
     stage_num = 9
-    stage_progress("COMPARING BASELINES", 0.0, "Running all 5 classical baselines")
+    stage_progress("COMPARING BASELINES (OOF)", 0.0, "Running all 5 classical baselines with OOF")
 
-    from science.baselines.module_f import run_all_baselines
+    from science.evaluation.oof_protocol import run_oof_baselines
+
+    # Reconstruct fold assignments from the OOF result
+    skf = StratifiedKFold(
+        n_splits=exp.evaluation_config.n_folds,
+        shuffle=True,
+        random_state=seed,
+    )
+    fold_assignments = list(skf.split(feature_matrix, labels))
 
     def baseline_progress(stage="", progress=0.0, message=""):
-        stage_progress("COMPARING BASELINES", progress, message)
+        stage_progress("COMPARING BASELINES (OOF)", progress, message)
 
     from app.state import BaselineResult
 
-    baseline_data = run_all_baselines(
-        baseline_progress,
-        sensor_scores, labels,
-        fusion_data["S_b"], fusion_data["S_w"],
-        crlb_data["initial_weights"],
+    baseline_data = run_oof_baselines(
+        feature_matrix=feature_matrix,
+        labels=labels,
+        sensor_feature_counts=sensor_feature_counts,
+        fold_assignments=fold_assignments,
+        crlb_weights=crlb_data["initial_weights"],
         lam=exp.fusion_config.lam,
         n_restarts=exp.fusion_config.n_restarts,
         seed=seed,
+        target_far=exp.fusion_config.target_far,
+        progress_callback=baseline_progress,
     )
 
     exp.baseline_results = []
@@ -453,13 +489,15 @@ def run_full_pipeline(
             objective_value=bd.get("objective_value"),
             solve_time_s=bd["solve_time_s"],
             fused_scores=bd["fused_scores"],
+            auc=bd["auc"],
+            threshold=bd.get("threshold"),
         )
         exp.baseline_results.append(br)
 
     event_bus.publish(Event(
         event_type=EventType.BASELINE_RESULT_UPDATED,
         source="BASELINES",
-        message=f"{len(baseline_data)} baselines evaluated",
+        message=f"{len(baseline_data)} baselines evaluated with OOF protocol",
         data={"experiment_id": exp_id},
     ))
 
@@ -468,6 +506,6 @@ def run_full_pipeline(
     # ========================================================
     exp.status = ModuleStatus.COMPLETED
 
-    stage_progress("COMPLETED", 1.0, f"Experiment {exp_id} complete")
+    stage_progress("COMPLETED", 1.0, f"Experiment {exp_id} complete — OOF AUC={oof_result.auc:.4f}")
 
     return exp

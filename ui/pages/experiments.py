@@ -73,9 +73,20 @@ class ExperimentsPage(ctk.CTkScrollableFrame):
             f"Scaling:      {exp.scaling_result.status.value}",
         ]
 
+        # Evaluation protocol
+        lines.append(f"")
+        lines.append(f"--- EVALUATION PROTOCOL ---")
+        lines.append(f"Protocol:     {getattr(exp, 'evaluation_protocol', 'UNKNOWN')}")
+        lines.append(f"Schema:       v{getattr(exp, 'schema_version', 1)}")
+        if exp.is_legacy_evaluation:
+            lines.append(f"⚠ LEGACY EVALUATION — IN-SAMPLE METRICS INVALID")
+
         if exp.metrics_result.auc:
             lines.append(f"\n--- HEADLINE RESULT ---")
-            lines.append(f"AUC:          {exp.metrics_result.auc}")
+            if exp.has_valid_oof:
+                lines.append(f"AUC (OOF):    {exp.metrics_result.auc}")
+            else:
+                lines.append(f"AUC (LEAKED): {exp.metrics_result.auc}")
         if exp.fusion_result.solver:
             lines.append(f"Solver:       {exp.fusion_result.solver}")
 
@@ -111,4 +122,40 @@ class ExperimentsPage(ctk.CTkScrollableFrame):
         self.refresh(new_exp)
 
     def _export(self):
-        pass  # Export functionality
+        exp = self._app.app_state.current_experiment
+        export_dir = self._app.app_state.default_export_dir
+        import os, json, numpy as np
+        from dataclasses import asdict
+        
+        if not os.path.exists(export_dir):
+            os.makedirs(export_dir)
+            
+        filepath = os.path.join(export_dir, f"{exp.experiment_id}.json")
+        
+        # Simple serialization helper to handle enums and arrays
+        def default_serializer(obj):
+            if isinstance(obj, np.ndarray):
+                return obj.tolist()
+            if hasattr(obj, 'value'):
+                return obj.value
+            return str(obj)
+            
+        try:
+            with open(filepath, 'w') as f:
+                json.dump(asdict(exp), f, default=default_serializer, indent=2)
+            
+            from app.events import event_bus, Event, EventType
+            event_bus.publish(Event(
+                event_type=EventType.EXPERIMENT_SAVED,
+                source="EXPERIMENTS_PAGE",
+                message=f"Exported to {filepath}",
+                data={"filepath": filepath}
+            ))
+        except Exception as e:
+            from app.events import event_bus, Event, EventType
+            event_bus.publish(Event(
+                event_type=EventType.TASK_FAILED,
+                source="EXPERIMENTS_PAGE",
+                message=f"Export failed: {str(e)}",
+                error=str(e)
+            ))

@@ -1,2 +1,17 @@
 Frontend manual.txt
 QT-2.23 manual claude enhanced.md
+
+# Audit and temporary scripts
+audit*.py
+validate_oof_fix.py
+generate_audit_report.py
+
+# Audit reports and outputs
+audit_report.md
+audit_results.txt
+POST_REMEDIATION_HOSTILE_VERIFICATION.md
+pre_audit_manifest.json
+
+# Cache
+__pycache__/
+*.pyc

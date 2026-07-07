@@ -188,12 +188,20 @@ class MissionControlPage(ctk.CTkScrollableFrame):
             far = exp.metrics_result.false_alarm_rate.point_estimate
             self._far.update_value(f"{far*100:.2f}%")
 
-        # Trust distribution
-        if exp.fusion_result.weights:
+        # Trust distribution — prefer OOF evaluation weights
+        weights_to_show = exp.evaluation_fusion_weights or (
+            exp.fusion_result.weights if exp.fusion_result.weights else None
+        )
+        if weights_to_show:
             for sensor, (bar, label) in self._trust_bars.items():
-                w = exp.fusion_result.weights.get(sensor, 0.333)
+                w = weights_to_show.get(sensor, 0.333)
                 bar.set(w)
-                label.configure(text=f"{w:.3f}")
+                # Show ± SD if evaluation weights available
+                if exp.evaluation_fusion_weights_std and sensor in exp.evaluation_fusion_weights_std:
+                    sd = exp.evaluation_fusion_weights_std[sensor]
+                    label.configure(text=f"{w:.3f}±{sd:.3f}")
+                else:
+                    label.configure(text=f"{w:.3f}")
 
         # Inference text
         self._update_inference(exp)
@@ -218,8 +226,11 @@ class MissionControlPage(ctk.CTkScrollableFrame):
                 lines.append(f"Radar SNR: {exp.radar_result.snr_db:.1f} dB "
                            f"({'strong' if exp.radar_result.snr_db > 0 else 'weak'})")
 
-            if exp.metrics_result.auc:
-                lines.append(f"Fused AUC: {exp.metrics_result.auc}")
+            if exp.has_valid_oof:
+                lines.append(f"Evaluation: 5-Fold Stratified OOF")
+                lines.append(f"Fused AUC (OOF): {exp.metrics_result.auc}")
+            elif exp.metrics_result.auc:
+                lines.append(f"⚠ LEGACY IN-SAMPLE AUC: {exp.metrics_result.auc}")
 
             if exp.fusion_result.solver:
                 lines.append(f"Solver: {exp.fusion_result.solver}")

@@ -82,15 +82,35 @@ class FeatureSpacePage(ctk.CTkScrollableFrame):
 
         self._solver_card.update_value(r.solver or "—")
 
-        # Feature list
+        # Feature list — show OOF selection stability if available
         self._feature_list.configure(state="normal")
         self._feature_list.delete("0.0", "end")
+
+        # OOF selection stability
+        if exp.oof_result and hasattr(exp.oof_result, 'feature_selection_frequency') and exp.oof_result.feature_selection_frequency:
+            lines = ["  ── OOF SELECTION STABILITY ──"]
+            freq = exp.oof_result.feature_selection_frequency
+            n_folds = exp.oof_result.n_splits
+            sorted_feats = sorted(freq.items(), key=lambda x: x[1], reverse=True)
+            for name, count in sorted_feats:
+                pct = count / n_folds * 100
+                marker = "✓" if count >= max(1, int(n_folds * 0.6)) else " "
+                lines.append(f"  {marker} {name:<30} {count}/{n_folds} folds ({pct:.0f}%)")
+            consensus = exp.oof_result.consensus_features or []
+            lines.append(f"\n  Consensus features (≥60%): {len(consensus)}")
+            lines.append("")
+
+        # Active model selection
         if r.selected_features:
-            lines = [f"  [{i+1}] {name}" for i, name in enumerate(r.selected_features)]
+            lines.append("  ── ACTIVE MODEL SELECTION ──")
+            for i, name in enumerate(r.selected_features):
+                lines.append(f"  [{i+1}] {name}")
             if r.objective_value is not None:
                 lines.append(f"\n  Solver objective:     {r.objective_value:.6f}")
             if r.brute_force_objective is not None:
                 lines.append(f"  Brute force objective: {r.brute_force_objective:.6f}")
+            self._feature_list.insert("0.0", "\n".join(lines))
+        elif 'lines' in dir():
             self._feature_list.insert("0.0", "\n".join(lines))
         self._feature_list.configure(state="disabled")
 

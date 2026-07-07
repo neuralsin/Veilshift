@@ -61,13 +61,15 @@ class ContributionPage(ctk.CTkScrollableFrame):
         # Detail table
         self._detail_text.configure(state="normal")
         self._detail_text.delete("0.0", "end")
-        lines = [f"{'Sensor':<12} {'Weights':>10} {'Ablation':>10} {'SHAP':>10}"]
+        lines = [f"{'Sensor':<12} {'Weights':<10} {'Ablation':<10} {'SHAP*':<10}"]
         lines.append("─" * 44)
         for sensor in ["radar", "thermal", "acoustic"]:
             w = cr.weight_contributions.get(sensor, 0) if cr.weight_contributions else 0
             a = cr.ablation_normalized.get(sensor, 0) if cr.ablation_normalized else 0
             s = cr.shap_sensor_contribution.get(sensor, 0) if cr.shap_sensor_contribution else 0
             lines.append(f"{sensor:<12} {w:>10.3f} {a:>10.3f} {s:>10.3f}")
+        lines.append("")
+        lines.append("* SHAP = ACTIVE MODEL SHAP (trained on full data)")
         self._detail_text.insert("0.0", "\n".join(lines))
         self._detail_text.configure(state="disabled")
 
@@ -89,7 +91,7 @@ class ContributionPage(ctk.CTkScrollableFrame):
             ax.set_facecolor(ChartStyle.AXES_FACECOLOR)
 
             sensors = ["radar", "thermal", "acoustic"]
-            methods = ["Weights", "Ablation", "SHAP"]
+            methods = ["Weights", "Ablation", "SHAP (Active Model)"]
             x = np.arange(len(sensors))
             width = 0.25
 

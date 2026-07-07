@@ -50,7 +50,7 @@ class BaselinesPage(ctk.CTkScrollableFrame):
         # Build table
         self._table.configure(state="normal")
         self._table.delete("0.0", "end")
-        header = f"{'Method':<25} {'AUC':>8} {'Time (s)':>10} {'Obj':>10}"
+        header = f"{'Method':<25} {'AUC(OOF)':>8} {'Time (s)':>10} {'Obj':>10}"
         self._table.insert("0.0", header + "\n" + "─" * 55 + "\n")
         for br in exp.baseline_results:
             auc_str = f"{br.auc:.4f}" if br.auc else "—"
@@ -64,7 +64,7 @@ class BaselinesPage(ctk.CTkScrollableFrame):
             t = exp.fusion_result.solve_time_s or 0
             obj = exp.fusion_result.fisher_objective or 0
             self._table.insert("end", "─" * 55 + "\n")
-            self._table.insert("end", f"{'► Optimized Fusion':<25} {auc:>8.4f} {t:>10.4f} {obj:>10.4f}\n")
+            self._table.insert("end", f"{'► Optimized (OOF)':<25} {auc:>8.4f} {t:>10.4f} {obj:>10.4f}\n")
         self._table.configure(state="disabled")
 
         self._render_charts(exp)

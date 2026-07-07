@@ -89,7 +89,18 @@ class FusionPage(ctk.CTkScrollableFrame):
         if mr.false_alarm_rate:
             self._far_card.update_value(f"{mr.false_alarm_rate.point_estimate*100:.2f}%")
 
-        if fr.weights:
+        # Prefer OOF evaluation weights for display
+        eval_w = exp.evaluation_fusion_weights
+        eval_sd = exp.evaluation_fusion_weights_std
+        if eval_w:
+            for sensor, (bar, val) in self._weight_bars.items():
+                w = eval_w.get(sensor, 0.333)
+                bar.set(w)
+                if eval_sd and sensor in eval_sd:
+                    val.configure(text=f"{w:.3f}±{eval_sd[sensor]:.3f}")
+                else:
+                    val.configure(text=f"{w:.3f}")
+        elif fr.weights:
             for sensor, (bar, val) in self._weight_bars.items():
                 w = fr.weights.get(sensor, 0.333)
                 bar.set(w)
