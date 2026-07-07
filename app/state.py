@@ -144,7 +144,11 @@ class ThermalConfig:
     bg_temperature_K: float = 290.0
     bg_emissivity: float = 0.95
     target_temperature_K: float = 310.0
-    target_emissivity: float = 0.3
+    # To be "stealthy" (Low Observability), the target's radiant exitance should closely match the background.
+    # M_bg = 0.95 * sigma * 290^4 = 380.86 W/m^2
+    # To match M_bg at 310K, eps_target = 380.86 / (sigma * 310^4) = 0.727
+    # We set target_emissivity = 0.7275 to create a small Delta M, making it a hard detection problem.
+    target_emissivity: float = 0.7275
     target_regime: TargetRegime = TargetRegime.STEALTH
     netd_K: float = 0.05
     noise_model: NoiseModel = NoiseModel.ONE_OVER_F
