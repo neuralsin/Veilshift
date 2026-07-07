@@ -194,7 +194,7 @@ class AppShell(ctk.CTk):
 
         self._experiment_label = ctk.CTkLabel(
             actions,
-            text=f"EXP: {self.app_state.current_experiment.experiment_id}",
+            text="QTMReg_109-Wandering Wight",
             font=(Typography.MONO_FONT, 11),
             text_color=Colors.TEXT_MUTED,
         )
@@ -408,7 +408,7 @@ class AppShell(ctk.CTk):
         """Create a new experiment."""
         self.app_state.current_experiment = ExperimentState()
         self._experiment_label.configure(
-            text=f"EXP: {self.app_state.current_experiment.experiment_id}"
+            text="QTMReg_109-Wandering Wight"
         )
         # Refresh current page
         if self._current_page and hasattr(self._current_page, 'refresh'):
