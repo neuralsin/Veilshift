@@ -355,6 +355,7 @@ class BaselineResult:
     weights: Optional[Dict[str, float]] = None
     objective_value: Optional[float] = None
     solve_time_s: Optional[float] = None
+    auc: Optional[float] = None
     metrics: Optional[MetricsResult] = None
     fused_scores: Optional[np.ndarray] = None
     threshold: Optional[float] = None
@@ -365,6 +366,7 @@ class ContributionResult:
     """Module L output."""
     weight_contributions: Optional[Dict[str, float]] = None
     ablation_delta_auc: Optional[Dict[str, float]] = None
+    ablation_normalized: Optional[Dict[str, float]] = None
     shap_sensor_contribution: Optional[Dict[str, float]] = None
     shap_feature_values: Optional[np.ndarray] = None
     shap_feature_names: Optional[List[str]] = None
@@ -382,6 +384,8 @@ class DegradationResult:
     physical_parameter_values: Optional[np.ndarray] = None
     static_detection_retention: Optional[np.ndarray] = None
     adaptive_detection_retention: Optional[np.ndarray] = None
+    static_auc: Optional[np.ndarray] = None
+    adaptive_auc: Optional[np.ndarray] = None
     static_ci_lower: Optional[np.ndarray] = None
     static_ci_upper: Optional[np.ndarray] = None
     adaptive_ci_lower: Optional[np.ndarray] = None
