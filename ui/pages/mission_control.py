@@ -45,7 +45,7 @@ class MissionControlPage(ctk.CTkScrollableFrame):
             metrics_row.grid_columnconfigure(i, weight=1)
 
         self._target_regime = MetricCard(
-            metrics_row, label="Target Regime", value="STEALTH",
+            metrics_row, label="Target Condition", value="—",
             accent_color=Colors.TEXT_SECONDARY,
         )
         self._target_regime.grid(row=0, column=0, sticky="nsew", padx=(0, Spacing.GRID_GAP))
@@ -95,8 +95,8 @@ class MissionControlPage(ctk.CTkScrollableFrame):
         bottom_row.grid_columnconfigure(0, weight=2)
         bottom_row.grid_columnconfigure(1, weight=1)
 
-        # Trust Distribution
-        trust_section = SectionFrame(bottom_row, title="Trust Distribution")
+        # Modality Weights
+        trust_section = SectionFrame(bottom_row, title="Mean OOF Fusion Weights")
         trust_section.grid(row=0, column=0, sticky="nsew", padx=(0, Spacing.GRID_GAP))
 
         self._trust_bars = {}
@@ -115,12 +115,12 @@ class MissionControlPage(ctk.CTkScrollableFrame):
                 progress_color=color, height=12, corner_radius=3, width=200,
             )
             bar.pack(side="left", fill="x", expand=True, padx=Spacing.SM)
-            bar.set(0.33)
+            bar.set(0.0)
 
             val_label = ctk.CTkLabel(
-                bar_frame, text="0.333",
+                bar_frame, text="—",
                 font=(Typography.MONO_FONT, 12),
-                text_color=color, width=50, anchor="e",
+                text_color=color, width=90, anchor="e",
             )
             val_label.pack(side="right")
 
@@ -188,20 +188,24 @@ class MissionControlPage(ctk.CTkScrollableFrame):
             far = exp.metrics_result.false_alarm_rate.point_estimate
             self._far.update_value(f"{far*100:.2f}%")
 
-        # Trust distribution — prefer OOF evaluation weights
+        # Fusion weights
         weights_to_show = exp.evaluation_fusion_weights or (
             exp.fusion_result.weights if exp.fusion_result.weights else None
         )
         if weights_to_show:
             for sensor, (bar, label) in self._trust_bars.items():
-                w = weights_to_show.get(sensor, 0.333)
+                w = weights_to_show.get(sensor, 0.0)
                 bar.set(w)
                 # Show ± SD if evaluation weights available
                 if exp.evaluation_fusion_weights_std and sensor in exp.evaluation_fusion_weights_std:
                     sd = exp.evaluation_fusion_weights_std[sensor]
-                    label.configure(text=f"{w:.3f}±{sd:.3f}")
+                    label.configure(text=f"{w:.3f} ±{sd:.3f} SD")
                 else:
                     label.configure(text=f"{w:.3f}")
+        else:
+            for sensor, (bar, label) in self._trust_bars.items():
+                bar.set(0.0)
+                label.configure(text="—")
 
         # Inference text
         self._update_inference(exp)
@@ -218,7 +222,7 @@ class MissionControlPage(ctk.CTkScrollableFrame):
             if exp.fusion_result.weights:
                 w = exp.fusion_result.weights
                 ranked = sorted(w.items(), key=lambda x: x[1], reverse=True)
-                lines.append(f"Sensor trust ranking: {ranked[0][0]} ({ranked[0][1]:.3f}) > "
+                lines.append(f"Fusion weight order: {ranked[0][0]} ({ranked[0][1]:.3f}) > "
                            f"{ranked[1][0]} ({ranked[1][1]:.3f}) > "
                            f"{ranked[2][0]} ({ranked[2][1]:.3f}).")
 

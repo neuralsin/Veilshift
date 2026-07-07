@@ -76,7 +76,7 @@ class RadarPage(ctk.CTkFrame):
                      text_color=Colors.RADAR).pack(fill="x", padx=Spacing.MD, pady=(Spacing.LG, Spacing.SM))
 
         self._target_type = ctk.CTkOptionMenu(
-            rail, values=["Stealth", "Conventional", "Custom"],
+            rail, values=["Low Observability", "Conventional", "Custom"],
             font=(Typography.UI_FONT, 11),
             fg_color=Colors.BG_DARKEST, button_color=Colors.BG_ELEVATED,
             dropdown_fg_color=Colors.BG_CARD,
@@ -84,7 +84,7 @@ class RadarPage(ctk.CTkFrame):
             width=200, height=Spacing.INPUT_HEIGHT,
         )
         self._target_type.pack(padx=Spacing.MD, pady=2, anchor="w")
-        self._target_type.set("Stealth")
+        self._target_type.set("Low Observability")
 
         self._rcs = ParameterField(rail, label="RCS σ", default="0.01", unit="m²")
         self._rcs.pack(fill="x", padx=Spacing.MD, pady=2)

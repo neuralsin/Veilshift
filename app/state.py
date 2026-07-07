@@ -35,7 +35,7 @@ class ModuleStatus(Enum):
 
 class TargetRegime(Enum):
     CONVENTIONAL = "Conventional"
-    STEALTH = "Stealth"
+    STEALTH = "Low Observability"
     CUSTOM = "Custom"
 
 
@@ -53,11 +53,11 @@ class OptimizationMode(Enum):
     CONTINUOUS_SLSQP = "Continuous · SLSQP"
     CONTINUOUS_DE = "Continuous · Differential Evolution"
     BINARY_QUBO = "Binary QUBO · 4-bit"
-    BACKUP_SA = "Backup · Simulated Annealing"
+    BACKUP_SA = "Classical · Simulated Annealing"
 
 
 class SolverBackend(Enum):
-    NEAL_SA = "Backup Solver · Simulated Annealing"
+    NEAL_SA = "Simulated Annealing Backend"
     SCIPY_SLSQP = "Classical · SLSQP"
     SCIPY_DE = "Classical · Differential Evolution"
 

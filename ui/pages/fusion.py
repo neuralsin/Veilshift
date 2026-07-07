@@ -70,7 +70,7 @@ class FusionPage(ctk.CTkScrollableFrame):
         self._roc_chart.pack(fill="both", expand=True)
 
         # Score distributions
-        self._dist_section = SectionFrame(charts, title="Score Distributions (H₀ vs H₁)")
+        self._dist_section = SectionFrame(charts, title="Fused Detection Score Distributions (H₀ vs H₁)")
         self._dist_section.grid(row=0, column=1, sticky="nsew")
         self._dist_chart = ctk.CTkFrame(self._dist_section.content, fg_color=Colors.BG_DARKEST, height=300)
         self._dist_chart.pack(fill="both", expand=True)
@@ -97,7 +97,7 @@ class FusionPage(ctk.CTkScrollableFrame):
                 w = eval_w.get(sensor, 0.333)
                 bar.set(w)
                 if eval_sd and sensor in eval_sd:
-                    val.configure(text=f"{w:.3f}±{eval_sd[sensor]:.3f}")
+                    val.configure(text=f"{w:.3f} ±{eval_sd[sensor]:.3f} SD")
                 else:
                     val.configure(text=f"{w:.3f}")
         elif fr.weights:
@@ -151,9 +151,9 @@ class FusionPage(ctk.CTkScrollableFrame):
                 ax2.hist(fr.fused_scores_h1, bins=50, alpha=0.6, color=Colors.RADAR, label="H₁ (target)", density=True)
                 if fr.threshold:
                     ax2.axvline(x=fr.threshold, color=Colors.CRITICAL, linewidth=1.5, linestyle="--", label=f"τ = {fr.threshold:.3f}")
-                ax2.set_xlabel("Fused Score", color=ChartStyle.LABEL_COLOR)
+                ax2.set_xlabel("Fused Detection Score", color=ChartStyle.LABEL_COLOR)
                 ax2.set_ylabel("Density", color=ChartStyle.LABEL_COLOR)
-                ax2.set_title("H₀ vs H₁ Score Distributions", color=ChartStyle.TEXT_COLOR)
+                ax2.set_title("H₀ vs H₁ Fused Detection Score Distributions", color=ChartStyle.TEXT_COLOR)
                 ax2.legend(fontsize=8, facecolor=ChartStyle.AXES_FACECOLOR, edgecolor=ChartStyle.GRID_COLOR,
                            labelcolor=ChartStyle.TEXT_COLOR)
                 ax2.tick_params(colors=ChartStyle.TICK_COLOR)

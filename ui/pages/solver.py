@@ -38,10 +38,10 @@ class SolverPage(ctk.CTkScrollableFrame):
         backend_info.pack(fill="x")
 
         fields = [
-            ("BQPhy / QuantumNow", "UNAVAILABLE — Backup Active", Colors.WARNING),
-            ("Backup QUBO Solver", "neal.SimulatedAnnealingSampler", Colors.SUCCESS),
-            ("Backup Continuous", "scipy.optimize.minimize (SLSQP)", Colors.SUCCESS),
-            ("Backup Global", "scipy.optimize.differential_evolution", Colors.SUCCESS),
+            ("BQPhy / QuantumNow", "CLASSICAL FALLBACK ACTIVE", Colors.WARNING),
+            ("Classical QUBO Solver", "neal.SimulatedAnnealingSampler", Colors.SUCCESS),
+            ("Classical Continuous", "scipy.optimize.minimize (SLSQP)", Colors.SUCCESS),
+            ("Classical Global", "scipy.optimize.differential_evolution", Colors.SUCCESS),
         ]
         for label, value, status_color in fields:
             row = ctk.CTkFrame(backend_info, fg_color="transparent")
@@ -73,7 +73,7 @@ class SolverPage(ctk.CTkScrollableFrame):
 
     def refresh(self, exp: ExperimentState):
         # Solver status — always computed from what actually ran
-        self._backend_card.update_value("BACKUP ACTIVE")
+        self._backend_card.update_value("CLASSICAL FALLBACK ACTIVE")
 
         if exp.fusion_result.solver:
             self._last_solver.update_value(exp.fusion_result.solver)

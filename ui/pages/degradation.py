@@ -66,8 +66,8 @@ class DegradationPage(ctk.CTkScrollableFrame):
         self._retention_chart = ctk.CTkFrame(self._retention_section.content, fg_color=Colors.BG_DARKEST, height=350)
         self._retention_chart.pack(fill="both", expand=True)
 
-        # Trust migration
-        self._trust_section = SectionFrame(charts, title="Trust Weight Migration")
+        # Modality weight shift
+        self._trust_section = SectionFrame(charts, title="Adaptive Fusion Weight Shift")
         self._trust_section.grid(row=0, column=1, sticky="nsew")
         self._trust_chart = ctk.CTkFrame(self._trust_section.content, fg_color=Colors.BG_DARKEST, height=350)
         self._trust_chart.pack(fill="both", expand=True)
@@ -129,8 +129,8 @@ class DegradationPage(ctk.CTkScrollableFrame):
                     ax2.plot(dr.severity_values, weights, 'o-', color=sensor_colors.get(sensor, Colors.TEXT_MUTED),
                             linewidth=2, markersize=5, label=sensor.title())
                 ax2.set_xlabel("Degradation Severity", color=ChartStyle.LABEL_COLOR)
-                ax2.set_ylabel("Trust Weight", color=ChartStyle.LABEL_COLOR)
-                ax2.set_title("Trust Weight Migration", color=ChartStyle.TEXT_COLOR)
+                ax2.set_ylabel("Modality Fusion Weight", color=ChartStyle.LABEL_COLOR)
+                ax2.set_title("Adaptive Fusion Weight Shift", color=ChartStyle.TEXT_COLOR)
                 ax2.legend(fontsize=9, facecolor=ChartStyle.AXES_FACECOLOR, edgecolor=ChartStyle.GRID_COLOR,
                            labelcolor=ChartStyle.TEXT_COLOR)
                 ax2.grid(True, color=ChartStyle.GRID_COLOR, alpha=ChartStyle.GRID_ALPHA)

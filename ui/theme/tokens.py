@@ -177,7 +177,7 @@ class ChartStyle:
 # ============================================================
 
 NAV_ICONS = {
-    "Mission Control": "⊞",
+    "System Overview": "⊞",
     "Radar": "◎",
     "Thermal / IR": "◈",
     "Acoustic / Sonar": "≋",
@@ -195,7 +195,7 @@ NAV_ICONS = {
 
 # Navigation groups per Frontend manual Section 2
 NAV_GROUPS = {
-    "OVERVIEW": ["Mission Control"],
+    "OVERVIEW": ["System Overview"],
     "SENSORS": ["Radar", "Thermal / IR", "Acoustic / Sonar"],
     "FUSION": ["Feature Space", "Fusion Optimization"],
     "EVALUATION": ["Baselines", "Contribution", "Degradation Lab", "Scaling"],
