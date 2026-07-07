@@ -1,0 +1,4063 @@
+You are the LEAD UI/UX DESIGNER, SCIENTIFIC VISUALIZATION DESIGNER, and DESKTOP PRODUCT ARCHITECT for a quantum optimization and sensor-fusion research application.
+
+Your task is to design the complete frontend and interaction architecture for a Python desktop application built using CUSTOMTKINTER.
+
+This is NOT:
+
+* a generic SaaS dashboard
+* a cybersecurity hacker UI
+* a military video game HUD
+* a web application
+* a Figma concept that cannot realistically be implemented
+* an AI-themed purple gradient dashboard
+* a collection of meaningless KPI cards
+* a PowerPoint visualization
+* a fake radar interface
+
+This is a REAL SCIENTIFIC EXPERIMENTATION CONSOLE for a quantum-optimized multi-sensor fusion and weak-target detection system.
+
+The final frontend must be:
+
+1. Visually exceptional.
+2. Scientifically credible.
+3. Extremely easy to understand during a hackathon demonstration.
+4. Directly implementable using Python and CustomTkinter.
+5. Deeply connected to the backend experiment pipeline.
+6. Capable of visualizing live and previously completed experiments.
+7. Designed around actual scientific inference rather than decorative analytics.
+8. Suitable for presentation to professors, PhD researchers, quantum optimization experts, and hackathon judges.
+9. Optimized for a 1920×1080 laptop/desktop presentation display.
+10. Fully usable at 1366×768 without essential controls becoming inaccessible.
+11. Architected so that charts are rendered using Matplotlib or Plotly-generated static/exported assets where required, while the surrounding application remains CustomTkinter.
+12. Modular enough that backend modules can be connected progressively while development continues.
+
+PROJECT NAME:
+
+TEMPORARY WORKING NAME:
+QUANTUM SENSOR FUSION & STEALTH DETECTION CONSOLE
+
+Problem Code:
+QT-2.23
+
+Core Concept:
+
+The system combines RADAR, THERMAL / INFRARED, and ACOUSTIC / SONAR evidence to detect weak, low-signature, or stealth targets in noisy and cluttered environments.
+
+A stealth target is not assumed to be completely invisible.
+
+Instead, its evidence is weak and fragmented across sensing modalities.
+
+Radar may observe a weak return.
+
+Thermal sensing may observe marginal radiative contrast.
+
+Acoustic sensing may observe faint tonal components.
+
+The application extracts interpretable features from all three modalities.
+
+QuantumNow / QIEO optimization is then used for:
+
+1. Feature subset optimization.
+2. Sensor fusion weight optimization.
+
+The system compares quantum-optimized fusion against multiple classical baselines.
+
+It also evaluates sensor degradation, sensor failure, jamming/noise injection, and adaptive re-optimization.
+
+THE CENTRAL UX STORY MUST BE:
+
+"Three imperfect sensors observe weak evidence. The system determines what evidence matters, how much each sensor should be trusted, and how that trust changes when the sensing environment degrades."
+
+Every major frontend decision must reinforce this story.
+
+==================================================
+SECTION 1 — ABSOLUTE VISUAL DIRECTION
+=====================================
+
+Create a sophisticated scientific desktop interface.
+
+VISUAL PERSONALITY:
+
+* dark
+* restrained
+* technical
+* high-information-density
+* precision-oriented
+* research-grade
+* cinematic only where scientifically appropriate
+* calm
+* deliberate
+* advanced
+* premium
+* not flashy
+* not childish
+* not excessively futuristic
+
+The visual identity should feel like a combination of:
+
+* aerospace telemetry software
+* modern scientific instrumentation
+* signal intelligence analysis software
+* quantitative research tooling
+* advanced observability dashboards
+* quantum optimization experimentation environments
+
+DO NOT directly copy any existing product.
+
+Use these only as conceptual quality references.
+
+AVOID:
+
+* neon green "hacker" aesthetics
+* Matrix visuals
+* giant glowing buttons
+* excessive gradients
+* glassmorphism everywhere
+* giant rounded SaaS cards
+* crypto dashboard styling
+* meaningless world maps
+* fake terminal text
+* skull icons
+* crosshair overload
+* excessive military camouflage
+* red alert animations everywhere
+* gratuitous particle effects
+* purple AI gradients
+* robot icons
+* brain icons for machine learning
+* atom icons on every quantum feature
+* glowing "QUANTUM" text
+* cyberpunk clichés
+
+The application should look credible even if the word "quantum" is removed.
+
+COLOR SYSTEM:
+
+Design a restrained dark theme.
+
+Suggested conceptual hierarchy:
+
+Application background:
+near-black neutral graphite.
+
+Primary surfaces:
+dark charcoal.
+
+Secondary surfaces:
+slightly elevated graphite.
+
+Borders:
+subtle low-contrast neutral borders.
+
+Primary text:
+soft off-white, never pure white everywhere.
+
+Secondary text:
+cool muted grey.
+
+Disabled text:
+low-emphasis grey.
+
+Sensor identities must remain visually persistent throughout the application.
+
+RADAR:
+assign one consistent cool technical accent.
+
+THERMAL:
+assign one consistent warm technical accent.
+
+ACOUSTIC:
+assign one consistent distinct spectral accent.
+
+QUANTUMNOW / OPTIMIZED RESULT:
+assign one premium accent distinct from all sensors.
+
+CLASSICAL BASELINES:
+neutral or desaturated comparative colors.
+
+WARNING / DEGRADED SENSOR:
+amber.
+
+CRITICAL / FAILED SENSOR:
+restrained red.
+
+SUCCESS / VALIDATED:
+muted green.
+
+DO NOT use random colors per graph.
+
+The user must subconsciously learn:
+
+"this color always means radar."
+
+"this color always means thermal."
+
+"this color always means acoustic."
+
+"this color always means optimized fusion."
+
+This identity must persist in:
+
+* cards
+* charts
+* labels
+* weight visualizations
+* degradation graphs
+* feature chips
+* contribution analysis
+* legends
+* status indicators
+
+TYPOGRAPHY:
+
+Use typography that can realistically be implemented in CustomTkinter.
+
+Recommend one primary UI font and one monospace font.
+
+The UI font should be modern, compact, and highly readable.
+
+The monospace font should be used for:
+
+* equations
+* parameter values
+* solver logs
+* experiment IDs
+* timestamps
+* objective values
+* scientific notation
+
+Typography hierarchy must be explicit:
+
+Page title.
+
+Page description.
+
+Section heading.
+
+Card heading.
+
+Primary metric.
+
+Secondary metric.
+
+Metadata.
+
+Caption.
+
+Scientific annotation.
+
+Status text.
+
+Do not solve hierarchy by making everything bold.
+
+Use spacing, size, weight, and contrast.
+
+CORNER RADIUS:
+
+Use restrained radii.
+
+This is desktop research software.
+
+Avoid giant 24–32 pixel rounded cards.
+
+Use approximately:
+
+6–10 px for most surfaces.
+
+12 px maximum for major containers.
+
+BUTTONS:
+
+Buttons must look like desktop application controls.
+
+Primary actions:
+
+Run Simulation.
+
+Run Optimization.
+
+Re-optimize Fusion.
+
+Compare Baselines.
+
+Export Report.
+
+Secondary actions:
+
+Reset.
+
+Duplicate Scenario.
+
+Load Experiment.
+
+Save Configuration.
+
+Buttons must have:
+
+default state.
+
+hover state.
+
+pressed state.
+
+disabled state.
+
+running state where relevant.
+
+For long-running operations, the action button must transform into an execution state.
+
+Example:
+
+RUN OPTIMIZATION
+
+becomes:
+
+OPTIMIZING · 03.8 s
+
+with a subtle activity indicator.
+
+Never allow repeated accidental execution.
+
+==================================================
+SECTION 2 — APPLICATION SHELL
+=============================
+
+Design a persistent application shell.
+
+LAYOUT:
+
+LEFT SIDEBAR
+
+TOP CONTEXT BAR
+
+MAIN WORKSPACE
+
+OPTIONAL RIGHT INSPECTOR
+
+BOTTOM EXECUTION / STATUS STRIP
+
+The interface must not rely on opening dozens of windows.
+
+Use one primary application window.
+
+Modal dialogs should be rare.
+
+LEFT SIDEBAR:
+
+Width approximately 220–250 px at 1920×1080.
+
+Collapsible at lower resolutions.
+
+Top:
+
+Application mark.
+
+Application name.
+
+Small label:
+
+QT-2.23
+
+Below:
+
+Navigation groups.
+
+GROUP 1 — OVERVIEW
+
+Mission Control
+
+GROUP 2 — SENSORS
+
+Radar
+
+Thermal / IR
+
+Acoustic / Sonar
+
+GROUP 3 — FUSION
+
+Feature Space
+
+Fusion Optimization
+
+GROUP 4 — EVALUATION
+
+Baselines
+
+Contribution
+
+Degradation Lab
+
+Scaling
+
+GROUP 5 — SYSTEM
+
+Experiments
+
+Solver
+
+Logs
+
+Settings
+
+Each navigation item requires:
+
+icon.
+
+label.
+
+active state.
+
+hover state.
+
+optional status indicator.
+
+Examples:
+
+Radar may show a green dot when simulation data exists.
+
+Fusion Optimization may show amber when configuration is incomplete.
+
+Solver may show:
+
+QIEO CONNECTED
+
+or:
+
+BACKUP SOLVER
+
+Do not display this as a giant badge.
+
+Use subtle status communication.
+
+BOTTOM OF SIDEBAR:
+
+Current project:
+
+QT-2.23
+
+Experiment count.
+
+Backend mode.
+
+Example:
+
+PROJECT
+QT-2.23
+
+SOLVER
+QuantumNow / QIEO
+
+or:
+
+SOLVER
+Simulated Annealing · Backup
+
+TOP CONTEXT BAR:
+
+Must show context rather than duplicate the page title.
+
+Left:
+
+Breadcrumb.
+
+Example:
+
+QT-2.23 / DEGRADATION LAB / EXP-024
+
+Center or flexible area:
+
+Current scenario label.
+
+Example:
+
+STEALTH · HEAVY CLUTTER · RADAR DEGRADED
+
+Right:
+
+Seed.
+
+Dataset samples.
+
+Backend status.
+
+Execution indicator.
+
+Example:
+
+SEED 42
+
+N = 12,000
+
+QIEO ONLINE
+
+The top bar must immediately communicate experimental context during a demonstration.
+
+BOTTOM STATUS STRIP:
+
+Very compact.
+
+Display:
+
+Backend state.
+
+Current operation.
+
+Elapsed time.
+
+Memory or dataset status if useful.
+
+Latest system message.
+
+Example:
+
+READY | EXP-024 LOADED | 12,000 SAMPLES | LAST SOLVE 1.842 s
+
+During execution:
+
+RUNNING | FEATURE QUBO | BUILDING Q MATRIX | 00:03.21
+
+The bottom status strip must be connected to backend progress callbacks.
+
+==================================================
+SECTION 3 — GLOBAL INTERACTION MODEL
+====================================
+
+The application is an experiment console.
+
+Every experiment should conceptually have:
+
+experiment_id
+
+experiment_name
+
+timestamp
+
+seed
+
+scenario_type
+
+sensor_parameters
+
+feature_configuration
+
+optimizer_configuration
+
+solver_name
+
+solver_metadata
+
+fusion_weights
+
+selected_features
+
+threshold
+
+metrics
+
+confidence_intervals
+
+baseline_results
+
+contribution_results
+
+degradation_results
+
+scaling_results
+
+status
+
+Design the frontend around this experiment object.
+
+The UI must never assume that every backend result is available.
+
+Each module requires these states:
+
+NOT CONFIGURED
+
+READY
+
+RUNNING
+
+COMPLETED
+
+WARNING
+
+FAILED
+
+The frontend must visually handle partial experiment completion.
+
+Example:
+
+Radar simulation completed.
+
+Thermal simulation completed.
+
+Acoustic simulation running.
+
+Feature selection unavailable.
+
+The interface must show dependency state clearly.
+
+DO NOT simply disable buttons with no explanation.
+
+Example:
+
+RUN FEATURE SELECTION
+
+Disabled.
+
+Below:
+
+"Requires completed feature extraction from at least 2 active modalities."
+
+Backend integration architecture should assume event callbacks.
+
+Conceptual events:
+
+on_simulation_started
+
+on_simulation_progress
+
+on_simulation_completed
+
+on_simulation_failed
+
+on_features_extracted
+
+on_qubo_built
+
+on_solver_started
+
+on_solver_progress
+
+on_solver_completed
+
+on_baseline_completed
+
+on_evaluation_completed
+
+on_degradation_step
+
+on_scaling_step
+
+on_experiment_saved
+
+The UI must be designed so components update from these events.
+
+Do not tightly couple widgets directly to scientific computation.
+
+Recommend a frontend architecture using:
+
+View
+
+Controller / Presenter
+
+Experiment State Store
+
+Backend Service Adapter
+
+Chart Renderer
+
+Theme Manager
+
+Component Library
+
+Suggested conceptual Python structure:
+
+app/
+main.py
+
+```
+ui/
+    shell/
+        sidebar.py
+        topbar.py
+        statusbar.py
+
+    pages/
+        mission_control.py
+        radar_page.py
+        thermal_page.py
+        acoustic_page.py
+        feature_space.py
+        fusion_optimization.py
+        baselines.py
+        contribution.py
+        degradation_lab.py
+        scaling.py
+        experiments.py
+        solver.py
+        logs.py
+        settings.py
+
+    components/
+        metric_card.py
+        sensor_card.py
+        chart_panel.py
+        parameter_field.py
+        parameter_group.py
+        equation_panel.py
+        status_badge.py
+        experiment_table.py
+        weight_bar.py
+        feature_chip.py
+        progress_stepper.py
+        comparison_row.py
+        empty_state.py
+        warning_banner.py
+        inspector.py
+        tooltip.py
+
+    charts/
+        radar_renderer.py
+        thermal_renderer.py
+        acoustic_renderer.py
+        roc_renderer.py
+        contribution_renderer.py
+        degradation_renderer.py
+        scaling_renderer.py
+        confusion_renderer.py
+
+    theme/
+        colors.py
+        typography.py
+        spacing.py
+        icons.py
+
+    state/
+        experiment_state.py
+        ui_state.py
+
+    services/
+        backend_adapter.py
+        experiment_service.py
+        export_service.py
+```
+
+The designer must produce a component system compatible with this modular structure.
+
+==================================================
+SECTION 4 — MISSION CONTROL PAGE
+================================
+
+This is the default landing page.
+
+PURPOSE:
+
+Within five seconds, a judge should understand:
+
+1. Three sensors exist.
+2. The target is weak / stealth.
+3. Each sensor produces imperfect evidence.
+4. Evidence is fused.
+5. Quantum optimization determines feature selection and sensor trust.
+6. The system can adapt under degradation.
+
+LAYOUT:
+
+Top summary row.
+
+Main sensor evidence area.
+
+Fusion center.
+
+Current experiment outcome.
+
+TOP SUMMARY:
+
+Page title:
+
+MISSION CONTROL
+
+Subtitle:
+
+Adaptive multi-modal evidence fusion for weak-target detection.
+
+Right:
+
+RUN FULL PIPELINE button.
+
+Secondary:
+
+NEW SCENARIO.
+
+Below:
+
+Four compact metric cards.
+
+TARGET REGIME
+
+STEALTH
+
+ACTIVE MODALITIES
+
+3 / 3
+
+FUSED AUC
+
+actual value with confidence interval.
+
+Example formatting:
+
+0.912
+
+95% CI 0.894–0.928
+
+FALSE ALARM RATE
+
+actual value.
+
+Never show fake metrics before execution.
+
+Before execution:
+
+—
+
+Awaiting evaluation
+
+MAIN AREA:
+
+Create three horizontal or vertical sensor evidence panels.
+
+RADAR.
+
+THERMAL / IR.
+
+ACOUSTIC.
+
+Each panel must show:
+
+Sensor name.
+
+Operational status.
+
+Current SNR or physically appropriate signal metric.
+
+Detection probability or per-sensor model score.
+
+Current fusion weight.
+
+Contribution rank.
+
+Mini signal visualization.
+
+RADAR MINI VISUAL:
+
+Range-Doppler heatmap or clutter profile.
+
+THERMAL MINI VISUAL:
+
+Thermal frame.
+
+ACOUSTIC MINI VISUAL:
+
+LOFAR spectrogram.
+
+Each sensor card should answer:
+
+"What did this sensor observe?"
+
+"How confident is it?"
+
+"How much does fusion currently trust it?"
+
+Example:
+
+RADAR
+
+SNR
+−8.4 dB
+
+SENSOR SCORE
+0.41
+
+FUSION WEIGHT
+0.18
+
+STATUS
+DEGRADED
+
+Do not confuse sensor score with fusion weight.
+
+Make labels explicit.
+
+CENTRAL FUSION AREA:
+
+Create a visual evidence convergence component.
+
+Three sensor channels visually enter a fusion node.
+
+Line thickness or a nearby weight indicator may represent current fusion weight.
+
+Avoid animated sci-fi energy beams.
+
+Use restrained directional lines.
+
+Center:
+
+FUSED SCORE
+
+0.82
+
+Threshold:
+
+τ = 0.63
+
+Decision:
+
+TARGET DETECTED
+
+Below:
+
+WEIGHT VECTOR
+
+w = [0.18, 0.51, 0.31]
+
+Sensor mapping must be obvious.
+
+Create a compact "Trust Distribution" bar.
+
+Radar 18%.
+
+Thermal 51%.
+
+Acoustic 31%.
+
+CURRENT INFERENCE PANEL:
+
+This is critical.
+
+Title:
+
+SYSTEM INFERENCE
+
+The backend should be able to populate concise structured observations.
+
+Example:
+
+"Radar evidence is weak under the current clutter level. Thermal contrast contributes the strongest direct separation. Acoustic tonal evidence provides complementary support."
+
+Do not use an LLM requirement.
+
+This can be generated from deterministic rules based on:
+
+weights.
+
+ablation delta.
+
+sensor score.
+
+degradation state.
+
+feature selection.
+
+The UI must visually distinguish calculated metrics from generated inference text.
+
+Add:
+
+EVIDENCE
+
+Radar weight decreased 34%.
+
+Thermal ablation ΔAUC = 0.087.
+
+Acoustic tonal feature selected.
+
+This panel exists specifically for hackathon presentation inference.
+
+==================================================
+SECTION 5 — RADAR LAB
+=====================
+
+Page title:
+
+RADAR SENSOR
+
+Subtitle:
+
+Physics-grounded low-RCS target simulation and CFAR detection.
+
+LAYOUT:
+
+Left parameter rail.
+
+Center signal workspace.
+
+Right analysis inspector.
+
+PARAMETER GROUP — RADAR HARDWARE
+
+Transmit Power Pt.
+
+Antenna Gain G.
+
+Frequency.
+
+Bandwidth B.
+
+Noise Figure F.
+
+System Loss L.
+
+Range R.
+
+PARAMETER GROUP — TARGET
+
+Target Type.
+
+Options:
+
+Conventional.
+
+Stealth.
+
+Custom.
+
+Radar Cross Section σ.
+
+Preset:
+
+Conventional 10 m².
+
+Stealth 0.01–0.1 m².
+
+PARAMETER GROUP — CLUTTER
+
+Model:
+
+Rayleigh.
+
+Weibull.
+
+Clutter Power.
+
+Weibull Shape k.
+
+If Rayleigh selected:
+
+Display:
+
+"Analytic CA-CFAR threshold available."
+
+If Weibull selected:
+
+Display warning/information:
+
+"General-shape Weibull clutter uses Monte Carlo CFAR calibration."
+
+Do not present this as an error.
+
+PARAMETER GROUP — CFAR
+
+Pfa.
+
+Reference Cells N.
+
+Guard Cells.
+
+Monte Carlo Trials.
+
+Only show Monte Carlo Trials when required.
+
+Default:
+
+200,000.
+
+PRIMARY ACTION:
+
+RUN RADAR SIMULATION.
+
+CENTER WORKSPACE:
+
+Tabs:
+
+RANGE PROFILE.
+
+RANGE-DOPPLER.
+
+CFAR.
+
+DISTRIBUTION.
+
+RANGE PROFILE:
+
+Plot signal amplitude / power versus range cell.
+
+Clearly mark target cell.
+
+Show clutter floor.
+
+Optional threshold overlay.
+
+RANGE-DOPPLER:
+
+Heatmap.
+
+Scientific axes.
+
+Colorbar.
+
+Target annotation.
+
+Do not use fake decorative radar sweeps.
+
+CFAR:
+
+Plot:
+
+test statistic.
+
+threshold.
+
+detections.
+
+Target cell.
+
+False alarms.
+
+Show:
+
+Configured Pfa.
+
+Empirical Pfa.
+
+Difference.
+
+Example:
+
+TARGET Pfa
+1.0 × 10⁻⁴
+
+EMPIRICAL Pfa
+1.08 × 10⁻⁴
+
+DISTRIBUTION:
+
+Rayleigh or Weibull histogram.
+
+Fitted / expected distribution overlay if backend supports it.
+
+RIGHT INSPECTOR:
+
+Equation card.
+
+MONOSTATIC RADAR RANGE EQUATION
+
+SNR =
+PtG²λ²σ /
+[(4π)³R⁴kT₀BFL]
+
+Below:
+
+Live substituted values.
+
+Example:
+
+σ = 0.01 m²
+
+R = 50 km
+
+Calculated SNR = −14.2 dB
+
+Then:
+
+PHYSICAL INFERENCE
+
+"Reducing RCS from 10 m² to 0.01 m² decreases radar SNR by approximately 30 dB under unchanged hardware and range conditions."
+
+This should update when RCS changes.
+
+VALIDATION PANEL:
+
+Conventional target Pd.
+
+Stealth target Pd.
+
+Empirical Pfa.
+
+CFAR calibration status.
+
+Use statuses:
+
+PASS.
+
+CHECK.
+
+FAILED.
+
+==================================================
+SECTION 6 — THERMAL / IR LAB
+============================
+
+Page title:
+
+THERMAL / IR SENSOR
+
+Subtitle:
+
+Radiative contrast and detector-noise simulation.
+
+LEFT PARAMETERS:
+
+BACKGROUND
+
+Temperature Tbg.
+
+Emissivity εbg.
+
+TARGET
+
+Temperature Ttarget.
+
+Emissivity εtarget.
+
+Preset:
+
+Conventional.
+
+Stealth.
+
+Custom.
+
+DETECTOR
+
+NETD.
+
+Spatial Noise.
+
+Options:
+
+White.
+
+1/f.
+
+1/f Alpha.
+
+Frame Size.
+
+PRIMARY ACTION:
+
+RUN THERMAL SIMULATION.
+
+CENTER:
+
+Tabs:
+
+THERMAL FRAME.
+
+CONTRAST MAP.
+
+NOISE SPECTRUM.
+
+FEATURES.
+
+THERMAL FRAME:
+
+Scientifically meaningful thermal image.
+
+Colorbar with units or normalized units clearly stated.
+
+Target boundary annotation optional.
+
+CONTRAST MAP:
+
+Target minus background.
+
+Show marginal target contrast.
+
+NOISE SPECTRUM:
+
+Log-log power spectral density.
+
+When 1/f noise is enabled, display fitted or reference slope.
+
+Example:
+
+EXPECTED α
+1.0
+
+OBSERVED SLOPE
+−0.96
+
+This helps catch implementation bugs.
+
+FEATURES:
+
+Peak Contrast.
+
+Edge Energy.
+
+Hot Spot Area.
+
+Contrast-to-Noise.
+
+RIGHT INSPECTOR:
+
+STEFAN–BOLTZMANN LAW
+
+M = εσSB T⁴
+
+Live values.
+
+TARGET EXITANCE.
+
+BACKGROUND EXITANCE.
+
+ΔM.
+
+NETD-derived noise floor.
+
+THERMAL SNR.
+
+PHYSICAL INFERENCE:
+
+"Target temperature is only 20 K above background and low emissivity suppresses radiant contrast. The target remains marginal relative to detector noise."
+
+Do not write "stealth technology detected."
+
+Use scientifically restrained language.
+
+==================================================
+SECTION 7 — ACOUSTIC / SONAR LAB
+================================
+
+Page title:
+
+ACOUSTIC / SONAR SENSOR
+
+Subtitle:
+
+Passive acoustic detection and LOFAR tonal analysis.
+
+LEFT PARAMETERS:
+
+TARGET SOURCE
+
+Source Level SL.
+
+Preset:
+
+Conventional 160 dB.
+
+Quiet / Stealth 110 dB.
+
+ENVIRONMENT
+
+Range.
+
+Sea State.
+
+Ambient Noise Level.
+
+Directivity Index.
+
+Detection Threshold.
+
+Absorption Coefficient.
+
+SIGNAL
+
+Duration.
+
+Sampling Frequency.
+
+Tonal Frequencies.
+
+Default:
+
+50 Hz.
+
+120 Hz.
+
+240 Hz.
+
+STFT
+
+Window.
+
+Nperseg.
+
+Overlap.
+
+PRIMARY ACTION:
+
+RUN ACOUSTIC SIMULATION.
+
+CENTER TABS:
+
+TIME SERIES.
+
+LOFAR.
+
+TONAL ANALYSIS.
+
+FEATURES.
+
+TIME SERIES:
+
+Waveform.
+
+LOFAR:
+
+Large spectrogram.
+
+This should be one of the most visually impressive scientific charts in the application.
+
+Frequency axis.
+
+Time axis.
+
+Power in dB.
+
+Mark expected tonal frequencies.
+
+When signal is weak, allow the user to toggle:
+
+ANNOTATIONS ON / OFF.
+
+TONAL ANALYSIS:
+
+Frequency spectrum.
+
+Highlight tonal bands.
+
+Display tonal-to-broadband ratio.
+
+FEATURES:
+
+Tonal Power.
+
+Broadband Power.
+
+Spectral Kurtosis.
+
+Tonal-to-Broadband Ratio.
+
+RIGHT INSPECTOR:
+
+PASSIVE SONAR EQUATION
+
+SE = SL − TL − (NL − DI) − DT
+
+Transmission Loss:
+
+TL = 20log₁₀R + αR
+
+Live calculation.
+
+SOURCE LEVEL.
+
+TRANSMISSION LOSS.
+
+NOISE LEVEL.
+
+SIGNAL EXCESS.
+
+PHYSICAL INFERENCE:
+
+"Target tonal lines are present near 50, 120, and 240 Hz but remain marginal against broadband ambient noise."
+
+==================================================
+SECTION 8 — FEATURE SPACE PAGE
+==============================
+
+Page title:
+
+FEATURE SPACE
+
+Subtitle:
+
+Interpretable multi-modal evidence and QUBO feature selection.
+
+This page must explain feature selection visually.
+
+TOP:
+
+Feature pool summary.
+
+TOTAL FEATURES.
+
+SELECTED.
+
+RADAR FEATURES.
+
+THERMAL FEATURES.
+
+ACOUSTIC FEATURES.
+
+Example:
+
+13 TOTAL
+
+6 SELECTED
+
+CENTER LEFT:
+
+FEATURE MATRIX / CORRELATION MAP.
+
+Show feature-to-feature correlation.
+
+Sensor groups visually separated.
+
+Feature labels abbreviated but tooltips show full names.
+
+CENTER RIGHT:
+
+FEATURE RELEVANCE PANEL.
+
+Horizontal bars.
+
+Feature relevance to target label.
+
+Use sensor identity colors.
+
+BOTTOM:
+
+QUBO FEATURE SELECTION WORKSPACE.
+
+Equation:
+
+H(x) =
+−αΣRelᵢxᵢ
+
+* βΣRedᵢⱼxᵢxⱼ
+* γ(Σxᵢ − k)²
+
+Controls:
+
+α Relevance Weight.
+
+β Redundancy Penalty.
+
+γ Cardinality Penalty.
+
+k Target Features.
+
+Primary:
+
+BUILD QUBO.
+
+Then:
+
+RUN FEATURE OPTIMIZATION.
+
+Display Q MATRIX.
+
+Provide a heatmap.
+
+Show:
+
+VARIABLES.
+
+NON-ZERO COUPLINGS.
+
+MATRIX DENSITY.
+
+SELECTED FEATURES:
+
+Use compact feature chips.
+
+Example:
+
+RADAR · Target-to-Clutter.
+
+RADAR · Peak SNR.
+
+THERMAL · Contrast-to-Noise.
+
+ACOUSTIC · Spectral Kurtosis.
+
+Selected chips have high emphasis.
+
+Rejected features remain visible but low emphasis.
+
+For each selected feature:
+
+Relevance.
+
+Average redundancy.
+
+Selection state.
+
+WHY SELECTED.
+
+Example deterministic explanation:
+
+"High target relevance with low redundancy against the current selected subset."
+
+VALIDATION PANEL:
+
+BRUTE FORCE OPTIMUM.
+
+QIEO RESULT.
+
+OBJECTIVE DIFFERENCE.
+
+SUBSET MATCH.
+
+Example:
+
+BRUTE FORCE
+−8.4217
+
+QIEO
+−8.4217
+
+SUBSET MATCH
+YES
+
+This is extremely important.
+
+Make the validation visually obvious.
+
+Do not celebrate a mismatch.
+
+If mismatch:
+
+STATUS:
+
+INVESTIGATE
+
+"Solver result differs from known optimum by ΔH = 0.031."
+
+==================================================
+SECTION 9 — FUSION OPTIMIZATION PAGE
+====================================
+
+This is one of the hero pages.
+
+Page title:
+
+FUSION OPTIMIZATION
+
+Subtitle:
+
+Adaptive sensor trust using Fisher class-separation optimization.
+
+TOP:
+
+Current sensor score distributions.
+
+Three compact density / histogram plots:
+
+Radar score distribution.
+
+Thermal score distribution.
+
+Acoustic score distribution.
+
+Each must show:
+
+H0 / No Target.
+
+H1 / Target.
+
+The user should visually see class overlap.
+
+CENTER LEFT:
+
+FISHER SEPARATION VISUALIZATION.
+
+Show:
+
+Before Fusion.
+
+After Fusion.
+
+Two score distributions.
+
+H0.
+
+H1.
+
+Display:
+
+Between-Class Separation.
+
+Within-Class Variance.
+
+Fisher Objective J or relaxed J'.
+
+CENTER RIGHT:
+
+TRUST DISTRIBUTION.
+
+Large weight visualization.
+
+RADAR
+
+0.18
+
+THERMAL
+
+0.51
+
+ACOUSTIC
+
+0.31
+
+Use horizontal weight bars.
+
+Also display vector:
+
+w = [0.18, 0.51, 0.31]
+
+Do not use pie charts.
+
+Below:
+
+WEIGHT SOURCE
+
+QuantumNow Continuous.
+
+or:
+
+Binary QUBO · 4-bit.
+
+or:
+
+SLSQP.
+
+SOLVER CONFIGURATION:
+
+λ.
+
+Optimization mode.
+
+Continuous.
+
+Binary QUBO.
+
+Classical Comparator.
+
+If Binary QUBO:
+
+Bits Per Weight.
+
+Simplex Penalty.
+
+Variable Count.
+
+Example:
+
+3 sensors × 4 bits
+
+12 binary variables
+
+RIGHT EQUATION PANEL:
+
+F = wᵀs
+
+J(w) =
+(μ₁(w) − μ₀(w))² /
+[σ₁²(w) + σ₀²(w)]
+
+Then derivation progression.
+
+Do not show every derivation line permanently.
+
+Create a collapsible:
+
+VIEW DERIVATION.
+
+Expanded:
+
+μc(w) = wᵀμc
+
+μ₁(w) − μ₀(w)
+= wᵀ(μ₁ − μ₀)
+
+Sb =
+(μ₁ − μ₀)(μ₁ − μ₀)ᵀ
+
+Var(wᵀs)
+= wᵀΣw
+
+Sw =
+Σ₁ + Σ₀
+
+Therefore:
+
+J(w) =
+wᵀSbw /
+wᵀSww
+
+Relaxed objective:
+
+J'(w) =
+wᵀ(Sb − λSw)w
+
+CONSTRAINTS:
+
+wᵢ ≥ 0.
+
+Σwᵢ = 1.
+
+BOTTOM COMPARISON:
+
+CRLB PRIOR.
+
+SLSQP.
+
+DIFFERENTIAL EVOLUTION.
+
+QUANTUMNOW.
+
+Columns:
+
+Radar Weight.
+
+Thermal Weight.
+
+Acoustic Weight.
+
+Objective.
+
+Solve Time.
+
+AUC.
+
+Detection Rate.
+
+FAR.
+
+Highlight best objective carefully.
+
+Do not automatically highlight QuantumNow.
+
+The data decides.
+
+PRIMARY ACTION:
+
+RUN FUSION OPTIMIZATION.
+
+SECONDARY:
+
+COMPARE ALL OPTIMIZERS.
+
+==================================================
+SECTION 10 — CLASSICAL BASELINES PAGE
+=====================================
+
+Page title:
+
+BASELINE COMPARISON
+
+Subtitle:
+
+Same data. Honest classical comparators.
+
+Baseline methods:
+
+CRLB-Weighted Fusion.
+
+Kalman Fusion.
+
+Bayesian Sequential Fusion.
+
+SLSQP Optimized Fusion.
+
+Differential Evolution.
+
+QuantumNow / QIEO.
+
+TOP:
+
+Headline comparison.
+
+Use a table.
+
+Columns:
+
+Method.
+
+AUC.
+
+95% CI.
+
+Detection Rate.
+
+False Alarm Rate.
+
+Precision.
+
+Recall.
+
+F1.
+
+Objective.
+
+Solve Time.
+
+Rows are methods.
+
+Allow sorting.
+
+Do not use a giant bar chart for eight metrics simultaneously.
+
+CENTER:
+
+ROC CURVE.
+
+All relevant methods.
+
+Use restrained line hierarchy.
+
+QuantumNow can be visually prominent but classical curves must remain visible.
+
+Show AUC in legend.
+
+BOTTOM LEFT:
+
+DETECTION VS FALSE ALARM.
+
+Plot operating points.
+
+Show selected Neyman–Pearson threshold.
+
+BOTTOM RIGHT:
+
+CONFUSION MATRIX.
+
+Method selector.
+
+IMPORTANT UI LABEL:
+
+"QuantumNow and SLSQP optimize the same Rayleigh-LDA fusion objective."
+
+This should appear as an experiment note.
+
+Another note:
+
+"SLSQP executed with ≥10 random restarts."
+
+Do not hide baseline configuration.
+
+Provide:
+
+VIEW BASELINE CONFIGURATION.
+
+==================================================
+SECTION 11 — CONTRIBUTION ANALYSIS PAGE
+=======================================
+
+Page title:
+
+SENSOR CONTRIBUTION
+
+Subtitle:
+
+Three independent views of sensor importance.
+
+TOP:
+
+Three method cards.
+
+FUSION WEIGHT.
+
+ABLATION ΔAUC.
+
+SHAP CONTRIBUTION.
+
+For each sensor show all three values.
+
+Example:
+
+RADAR
+
+Weight
+0.18
+
+Ablation ΔAUC
+0.021
+
+Mean |SHAP|
+0.064
+
+THERMAL
+
+Weight
+0.51
+
+Ablation ΔAUC
+0.087
+
+Mean |SHAP|
+0.143
+
+ACOUSTIC
+
+Weight
+0.31
+
+Ablation ΔAUC
+0.044
+
+Mean |SHAP|
+0.091
+
+CENTER:
+
+CONTRIBUTION AGREEMENT VISUAL.
+
+Create a normalized grouped bar chart.
+
+X-axis:
+
+Radar.
+
+Thermal.
+
+Acoustic.
+
+Bars:
+
+Weight.
+
+Ablation.
+
+SHAP.
+
+Values normalized for comparison.
+
+Display:
+
+AGREEMENT STATUS.
+
+HIGH AGREEMENT.
+
+PARTIAL AGREEMENT.
+
+DISAGREEMENT.
+
+Do not fabricate statistical agreement.
+
+Define UI placeholders for backend-computed agreement logic.
+
+RIGHT:
+
+INFERENCE PANEL.
+
+Example:
+
+"Thermal sensing ranks first across fusion weight, ablation loss, and SHAP magnitude. This provides convergent evidence that thermal contrast is the dominant modality in the current scenario."
+
+If disagreement:
+
+"Radar receives a low direct fusion weight but produces a larger ablation loss than expected. This suggests complementary information not represented by weight magnitude alone."
+
+BOTTOM:
+
+FEATURE-LEVEL SHAP.
+
+Beeswarm or horizontal importance chart.
+
+Group features by sensor.
+
+Provide filter:
+
+ALL.
+
+RADAR.
+
+THERMAL.
+
+ACOUSTIC.
+
+==================================================
+SECTION 12 — DEGRADATION LAB
+============================
+
+THIS IS THE HERO DEMONSTRATION PAGE.
+
+It must be visually outstanding.
+
+Page title:
+
+DEGRADATION LAB
+
+Subtitle:
+
+Observe how optimized sensor trust migrates under sensor degradation.
+
+TOP SCENARIO BUILDER:
+
+DEGRADE SENSOR:
+
+Radar.
+
+Thermal.
+
+Acoustic.
+
+DEGRADATION TYPE:
+
+For Radar:
+
+Interference / Jamming Noise.
+
+Clutter Increase.
+
+Sensor Removal.
+
+For Thermal:
+
+NETD Increase.
+
+Spatial Noise Increase.
+
+Sensor Removal.
+
+For Acoustic:
+
+Ambient Masking Noise.
+
+Source Suppression.
+
+Sensor Removal.
+
+SEVERITY:
+
+Interactive slider.
+
+0–100%.
+
+Below slider show actual physical parameter transformation.
+
+Example:
+
+RADAR INTERFERENCE
+
+0 dB → +18 dB
+
+or:
+
+NETD
+
+0.05 K → 0.20 K
+
+STEPS:
+
+3.
+
+4.
+
+5.
+
+6.
+
+Primary:
+
+RUN DEGRADATION SWEEP.
+
+Comparison:
+
+STATIC WEIGHTS.
+
+ADAPTIVE RE-OPTIMIZATION.
+
+MAIN VISUAL 1:
+
+DETECTION RATE RETENTION VS DEGRADATION SEVERITY.
+
+Y-axis:
+
+Detection Rate Retention (% of clean performance).
+
+X-axis:
+
+Physical degradation level.
+
+Lines:
+
+Static Fusion.
+
+Adaptive Optimized Fusion.
+
+Show confidence bands if available.
+
+Allow hover-like inspection using CustomTkinter-compatible chart click or nearest-point labels if feasible.
+
+At selected point:
+
+STATIC
+68.2 ± 2.1%
+
+ADAPTIVE
+84.7 ± 1.8%
+
+Δ
++16.5 pp
+
+Use actual backend values.
+
+MAIN VISUAL 2:
+
+TRUST MIGRATION.
+
+Plot fusion weight versus degradation severity.
+
+Three lines:
+
+Radar.
+
+Thermal.
+
+Acoustic.
+
+This graph is scientifically central.
+
+When radar is degraded, expected interpretation may be:
+
+Radar weight decreases.
+
+Thermal weight increases.
+
+Acoustic weight increases.
+
+However:
+
+DO NOT encode the expected result into the UI.
+
+Render backend values exactly.
+
+Add a vertical cursor synchronized between both degradation charts.
+
+Selecting severity on Graph 1 updates Graph 2 and the sensor cards.
+
+SIDE PANEL:
+
+BEFORE.
+
+AFTER.
+
+Example:
+
+CLEAN
+
+Radar
+0.44
+
+Thermal
+0.34
+
+Acoustic
+0.22
+
+AT +18 dB INTERFERENCE
+
+Radar
+0.11
+
+Thermal
+0.56
+
+Acoustic
+0.33
+
+TRUST MIGRATION
+
+Radar
+−75.0%
+
+Thermal
++64.7%
+
+Acoustic
++50.0%
+
+Below:
+
+DETECTION RETENTION
+
+Static:
+68.2%
+
+Adaptive:
+84.7%
+
+CURRENT INFERENCE:
+
+"The optimized fusion system reduced radar trust as radar interference increased. Thermal evidence became dominant while acoustic evidence gained secondary weight. Adaptive fusion retained 16.5 percentage points more detection performance than static fusion at the selected degradation level."
+
+Generate this from structured data.
+
+BOTTOM:
+
+DYNAMIC CONTRIBUTION ANALYSIS.
+
+At selected degradation point show:
+
+Weight Contribution.
+
+Ablation ΔAUC.
+
+SHAP.
+
+Compare:
+
+Clean.
+
+Selected Degradation.
+
+This directly connects sensor contribution analysis with degradation.
+
+Add a toggle:
+
+SHOW CONTRIBUTION MIGRATION.
+
+When enabled, show how normalized sensor contribution changes across degradation steps.
+
+This page should produce the strongest screenshot and strongest live demo moment in the entire application.
+
+==================================================
+SECTION 13 — SCALING EXPERIMENT PAGE
+====================================
+
+Page title:
+
+OPTIMIZATION SCALING
+
+Subtitle:
+
+Measure solver behaviour as the sensor optimization space grows.
+
+Important conceptual rule:
+
+The UI must NOT claim "quantum advantage."
+
+It displays measured scaling behaviour.
+
+TOP CONFIGURATION:
+
+Problem Sizes.
+
+Default:
+
+3.
+
+4.
+
+5.
+
+12 modalities.
+
+Solvers:
+
+Brute Force.
+
+Grid Search.
+
+SLSQP.
+
+Differential Evolution.
+
+QuantumNow / QIEO.
+
+Metrics:
+
+Solve Time.
+
+Objective Quality.
+
+Primary:
+
+RUN SCALING EXPERIMENT.
+
+MAIN GRAPH 1:
+
+SOLVE TIME VS PROBLEM SIZE.
+
+Y-axis:
+
+Solve Time in seconds.
+
+LOG SCALE.
+
+X-axis:
+
+Problem Size / Modalities or Variable Count.
+
+One line per solver.
+
+When brute force becomes infeasible or is intentionally stopped:
+
+Show line termination.
+
+Label:
+
+NOT EXECUTED BEYOND N = X.
+
+Do not draw fake extrapolated values as real measurements.
+
+If extrapolation is available:
+
+Use dashed line.
+
+Explicitly label:
+
+EXTRAPOLATED.
+
+MAIN GRAPH 2:
+
+NORMALIZED OBJECTIVE QUALITY VS PROBLEM SIZE.
+
+Best-known objective normalized appropriately.
+
+Display exact normalization definition in tooltip / info panel.
+
+Speed without quality must never be presented alone.
+
+BOTTOM:
+
+SCALING TABLE.
+
+Problem Size.
+
+Variable Count.
+
+Solver.
+
+Solve Time.
+
+Objective.
+
+Normalized Quality.
+
+Status.
+
+Reads / Iterations if available.
+
+INFERENCE PANEL:
+
+Example:
+
+"At three modalities, classical SLSQP remains faster in wall-clock time. As the optimization space expands, differential evolution solve time increases more rapidly while QIEO maintains [measured behaviour]. Objective quality remains within [actual percentage] of the best-known solution."
+
+Again:
+
+Use measured data.
+
+Never vendor marketing claims.
+
+==================================================
+SECTION 14 — STATISTICAL RELIABILITY UX
+=======================================
+
+Statistical reliability must be visible throughout the application.
+
+Never show:
+
+AUC 94%
+
+when the backend has:
+
+AUC = 0.94 ± 0.03.
+
+Display uncertainty.
+
+Preferred formats:
+
+0.912 ± 0.018
+
+or:
+
+0.912
+
+95% CI 0.894–0.928
+
+Create a reusable ConfidenceMetric component.
+
+It must support:
+
+point estimate.
+
+standard deviation.
+
+confidence interval.
+
+sample count.
+
+Tooltip / expandable metadata.
+
+Example:
+
+AUC
+
+0.912
+
+95% CI 0.894–0.928
+
+i icon:
+
+Bootstrap samples: 1,000
+
+Evaluation folds: 5
+
+Simulation seeds: 5
+
+For charts:
+
+Confidence bands where applicable.
+
+For tables:
+
+Dedicated CI column.
+
+For headline metrics:
+
+Do not hide uncertainty in a tooltip only.
+
+Create a global EVALUATION PROTOCOL panel.
+
+5-FOLD STRATIFIED CV.
+
+5 SIMULATION SEEDS.
+
+1,000 BOOTSTRAP SAMPLES.
+
+95% CI.
+
+Status per item:
+
+Configured.
+
+Running.
+
+Completed.
+
+==================================================
+SECTION 15 — EXPERIMENT MANAGER
+===============================
+
+Page title:
+
+EXPERIMENTS
+
+This is not a file browser.
+
+It is a scientific experiment registry.
+
+TABLE:
+
+Experiment ID.
+
+Name.
+
+Scenario.
+
+Target Type.
+
+Modalities.
+
+Solver.
+
+AUC.
+
+Detection Rate.
+
+FAR.
+
+Created.
+
+Status.
+
+Example:
+
+EXP-024
+
+Radar Degradation Sweep
+
+Stealth / Heavy Clutter
+
+3/3
+
+QIEO
+
+0.912 [0.894–0.928]
+
+84.7%
+
+1.02%
+
+07 Jul 2026 21:14
+
+COMPLETED
+
+Features:
+
+Search.
+
+Filter by scenario.
+
+Filter by solver.
+
+Filter by target regime.
+
+Sort.
+
+Duplicate.
+
+Rename.
+
+Delete with confirmation.
+
+Load.
+
+Compare.
+
+Select 2–4 experiments.
+
+COMPARE EXPERIMENTS:
+
+Show parameter differences first.
+
+Do not immediately show metrics.
+
+Example:
+
+EXP-021 vs EXP-024
+
+RCS:
+0.10 → 0.01 m²
+
+Clutter:
+Rayleigh → Weibull k=1.5
+
+Radar degradation:
+0 → +18 dB
+
+Solver:
+SLSQP → QIEO
+
+Then metrics.
+
+This prevents misleading comparisons between different scenarios.
+
+==================================================
+SECTION 16 — SOLVER PAGE
+========================
+
+Page title:
+
+SOLVER
+
+Subtitle:
+
+Optimization backend and execution diagnostics.
+
+TOP STATUS:
+
+QUANTUMNOW / QIEO.
+
+CONNECTED.
+
+AUTHENTICATED.
+
+or:
+
+UNAVAILABLE.
+
+BACKUP ACTIVE.
+
+Do not fake connection state.
+
+Display backend state directly.
+
+SOLVER MODES:
+
+QuantumNow Continuous.
+
+QuantumNow Binary.
+
+Simulated Annealing Backup.
+
+Classical SLSQP.
+
+Differential Evolution.
+
+CURRENT JOB:
+
+Job ID.
+
+Experiment ID.
+
+Problem Type.
+
+Variables.
+
+Q Matrix Size.
+
+Objective.
+
+Start Time.
+
+Elapsed.
+
+Status.
+
+SOLVER HISTORY TABLE:
+
+Timestamp.
+
+Experiment.
+
+Solver.
+
+Problem.
+
+Variables.
+
+Solve Time.
+
+Objective.
+
+Status.
+
+For QuantumNow metadata:
+
+Only display fields actually returned by the SDK.
+
+Do not invent:
+
+qubits used.
+
+quantum fidelity.
+
+quantum energy.
+
+annealing temperature.
+
+If the SDK does not return a value, do not display it.
+
+Provide:
+
+VIEW RAW SOLVER METADATA.
+
+Render key-value data in a monospace inspector.
+
+==================================================
+SECTION 17 — LOGS PAGE
+======================
+
+Scientific application logs.
+
+Filters:
+
+ALL.
+
+SIMULATION.
+
+FEATURES.
+
+OPTIMIZATION.
+
+EVALUATION.
+
+SOLVER.
+
+WARNING.
+
+ERROR.
+
+Each log entry:
+
+Timestamp.
+
+Module.
+
+Level.
+
+Message.
+
+Experiment ID.
+
+Example:
+
+21:14:03.412
+
+RADAR
+
+INFO
+
+Generated 12,000 Rayleigh clutter scenarios.
+
+EXP-024
+
+21:14:05.981
+
+CFAR
+
+INFO
+
+Empirical Pfa = 1.08e−4; target = 1.00e−4.
+
+EXP-024
+
+21:14:07.114
+
+FEATURE-QUBO
+
+PASS
+
+QIEO subset matches brute-force optimum.
+
+EXP-024
+
+Allow copy.
+
+Export logs.
+
+Do not make logs look like a fake terminal.
+
+==================================================
+SECTION 18 — SETTINGS PAGE
+==========================
+
+Groups:
+
+GENERAL.
+
+Theme.
+
+UI Scale.
+
+Chart DPI.
+
+Animation.
+
+Default Export Directory.
+
+EXPERIMENT DEFAULTS.
+
+Default Seed.
+
+Default Sample Count.
+
+Default Folds.
+
+Default Bootstrap Samples.
+
+Default CI.
+
+SOLVER.
+
+Default Solver.
+
+Fallback Solver.
+
+Timeout.
+
+Reads if supported.
+
+AUTO FALLBACK.
+
+VISUALIZATION.
+
+Scientific notation threshold.
+
+Chart annotation density.
+
+Confidence bands.
+
+Sensor color identity preview.
+
+DEVELOPER.
+
+Backend module paths.
+
+Debug mode.
+
+Event logging.
+
+Performance profiling.
+
+==================================================
+SECTION 19 — CHART DESIGN RULES
+===============================
+
+All charts must follow a unified scientific visualization system.
+
+Every chart requires:
+
+Title.
+
+Optional concise subtitle.
+
+Axis labels.
+
+Units.
+
+Legend when necessary.
+
+Data-state handling.
+
+Empty state.
+
+Loading state.
+
+Error state.
+
+Export action.
+
+Optional enlarge action.
+
+Never rely on color alone.
+
+Use:
+
+line style.
+
+markers.
+
+labels.
+
+where appropriate.
+
+Do not use:
+
+3D bar charts.
+
+3D pie charts.
+
+donut charts for scientific metrics.
+
+gauge charts.
+
+speedometers.
+
+radial progress charts.
+
+decorative waveform animations.
+
+Use pie charts only if mathematically necessary.
+
+Prefer:
+
+line charts.
+
+scatter plots.
+
+heatmaps.
+
+histograms.
+
+density plots.
+
+horizontal bars.
+
+grouped bars.
+
+confidence bands.
+
+ROC curves.
+
+confusion matrices.
+
+spectrograms.
+
+range-Doppler maps.
+
+correlation matrices.
+
+Q matrices.
+
+All charts must visually respect the sensor identity colors.
+
+When showing H0 and H1:
+
+Use consistent styles throughout.
+
+Example:
+
+H0 / No Target:
+lower-emphasis or dashed.
+
+H1 / Target:
+higher-emphasis or solid.
+
+Every graph should support export to PNG.
+
+Important graphs should support export to SVG or PDF if the chart stack allows it.
+
+Charts intended for the pitch deck should have:
+
+EXPORT FOR PRESENTATION.
+
+This exports at high resolution with:
+
+transparent or dark background option.
+
+larger labels.
+
+clean legend.
+
+no application chrome.
+
+Target graphs:
+
+ROC Curve.
+
+Detection Retention.
+
+Trust Migration.
+
+Contribution Agreement.
+
+Scaling Time.
+
+Scaling Quality.
+
+CRLB vs Empirical Variance.
+
+==================================================
+SECTION 20 — MICROINTERACTIONS
+==============================
+
+Use subtle microinteractions.
+
+Navigation transition:
+
+100–180 ms.
+
+Button hover:
+
+subtle surface or border change.
+
+Cards:
+
+do not float dramatically.
+
+Metric update:
+
+brief low-intensity highlight.
+
+When a fusion weight changes:
+
+animate the bar from previous to new value over approximately 300–500 ms.
+
+When degradation sweep advances:
+
+move chart cursor and update weight bars.
+
+When a sensor enters degraded state:
+
+status dot and label change.
+
+Do not flash the entire sensor card.
+
+When a solver completes:
+
+show a restrained completion indicator.
+
+No confetti.
+
+No fireworks.
+
+No giant success modal.
+
+For simulation progress:
+
+Use a stage stepper.
+
+Example:
+
+GENERATING SCENARIOS
+
+EXTRACTING FEATURES
+
+TRAINING SENSOR DETECTORS
+
+BUILDING QUBO
+
+OPTIMIZING FUSION
+
+EVALUATING
+
+COMPLETED
+
+Current stage highlighted.
+
+Completed stages marked.
+
+Elapsed time displayed.
+
+==================================================
+SECTION 21 — EMPTY, LOADING, ERROR, AND PARTIAL STATES
+======================================================
+
+Design every major page for:
+
+NO EXPERIMENT.
+
+NO DATA.
+
+PARTIAL DATA.
+
+RUNNING.
+
+COMPLETED.
+
+FAILED.
+
+Example Mission Control empty state:
+
+NO ACTIVE EXPERIMENT
+
+Configure a scenario or load a previous experiment to begin.
+
+Buttons:
+
+NEW SCENARIO.
+
+LOAD EXPERIMENT.
+
+Radar page before simulation:
+
+RADAR SIGNAL NOT GENERATED
+
+Configure physical and clutter parameters, then run the sensor simulation.
+
+Feature page with incomplete sensors:
+
+FEATURE EXTRACTION UNAVAILABLE
+
+Completed:
+Radar.
+
+Thermal.
+
+Pending:
+Acoustic.
+
+Fusion page before scores:
+
+SENSOR SCORES REQUIRED
+
+Complete per-sensor detection before fusion optimization.
+
+Solver failure:
+
+OPTIMIZATION FAILED
+
+Solver:
+QuantumNow Continuous.
+
+Stage:
+Objective submission.
+
+Message:
+[actual backend error]
+
+Actions:
+
+VIEW LOG.
+
+RETRY.
+
+USE BINARY QUBO.
+
+USE BACKUP SOLVER.
+
+Do not display:
+
+"Something went wrong."
+
+Always expose scientifically or technically useful context.
+
+==================================================
+SECTION 22 — TOOLTIP AND HELP SYSTEM
+====================================
+
+The application will be demonstrated to people with varying backgrounds.
+
+Create contextual scientific tooltips.
+
+Examples:
+
+RCS σ:
+
+"Radar Cross Section. A measure of how strongly a target reflects radar energy. Lower values generally produce weaker radar returns."
+
+NETD:
+
+"Noise-Equivalent Temperature Difference. The minimum temperature difference a thermal detector can distinguish relative to its noise floor."
+
+CFAR:
+
+"Constant False Alarm Rate detection. The threshold adapts to estimated local clutter statistics."
+
+Fisher Objective:
+
+"Measures class separability by rewarding between-class distance and penalizing within-class spread."
+
+AUC:
+
+"Area under the ROC curve. Measures ranking performance across all detection thresholds."
+
+Ablation ΔAUC:
+
+"Loss in AUC after removing one sensor and renormalizing the remaining fusion weights."
+
+QUBO:
+
+"Quadratic Unconstrained Binary Optimization. A binary optimization form containing linear and pairwise variable interactions."
+
+Do not put textbook paragraphs in tooltips.
+
+Two or three sentences maximum.
+
+Provide an equation information button where needed.
+
+==================================================
+SECTION 23 — KEYBOARD AND DESKTOP UX
+====================================
+
+Because this is a desktop application, support keyboard workflows.
+
+Suggested shortcuts:
+
+Ctrl+N:
+New Experiment.
+
+Ctrl+O:
+Load Experiment.
+
+Ctrl+S:
+Save Experiment.
+
+Ctrl+R:
+Run current module.
+
+Ctrl+Shift+R:
+Run full pipeline.
+
+Ctrl+E:
+Export current graph.
+
+Ctrl+L:
+Open Logs.
+
+Ctrl+K:
+Command palette if implemented.
+
+Escape:
+Close inspector / dialog.
+
+Do not trigger destructive operations with a single shortcut.
+
+Tab navigation should be logical.
+
+Inputs must support keyboard editing.
+
+Numeric fields:
+
+allow direct entry.
+
+increment controls optional.
+
+validate ranges.
+
+display units separately from editable values.
+
+Example:
+
+[ 50000 ] km is WRONG if backend expects metres and the field means 50,000 km.
+
+Instead:
+
+RANGE
+
+[ 50.0 ] [ km ▼ ]
+
+Internally normalize to SI units.
+
+==================================================
+SECTION 24 — CUSTOMTKINTER IMPLEMENTATION CONSTRAINTS
+=====================================================
+
+This design MUST be realistic for CustomTkinter.
+
+Do not create layouts that require complex web CSS.
+
+Use:
+
+CTk.
+
+CTkFrame.
+
+CTkScrollableFrame.
+
+CTkLabel.
+
+CTkButton.
+
+CTkEntry.
+
+CTkOptionMenu.
+
+CTkComboBox.
+
+CTkSlider.
+
+CTkSwitch.
+
+CTkCheckBox.
+
+CTkTabview.
+
+CTkProgressBar.
+
+CTkTextbox.
+
+Canvas only where custom drawing is genuinely needed.
+
+Use grid layout for most page architecture.
+
+Every page should define row and column weights correctly.
+
+Avoid absolute positioning.
+
+Use reusable frames.
+
+Charts should be embedded using:
+
+FigureCanvasTkAgg
+
+for Matplotlib.
+
+Do not redraw an entire Matplotlib figure on every minor UI event if only one artist needs updating.
+
+For live degradation sweeps:
+
+retain line objects.
+
+update line data.
+
+call draw_idle().
+
+For heatmaps:
+
+update image data where practical.
+
+Long-running scientific operations MUST NOT run on the Tkinter main thread.
+
+Assume:
+
+ThreadPoolExecutor
+
+or a worker-thread architecture.
+
+Backend work emits progress events.
+
+UI updates are marshalled back to the Tkinter thread using:
+
+root.after(...)
+
+Never directly update Tk widgets from worker threads.
+
+Design loading states around asynchronous execution.
+
+The UI must remain responsive during:
+
+200,000-trial Monte Carlo calibration.
+
+multi-seed simulation.
+
+cross-validation.
+
+bootstrap evaluation.
+
+QuantumNow solver calls.
+
+scaling sweeps.
+
+degradation sweeps.
+
+Create a central Task Manager concept.
+
+Each task:
+
+task_id.
+
+experiment_id.
+
+task_type.
+
+status.
+
+progress.
+
+stage.
+
+elapsed_time.
+
+message.
+
+error.
+
+The status bar and page-specific progress controls should observe task state.
+
+==================================================
+SECTION 25 — BACKEND DATA CONTRACTS
+===================================
+
+Design frontend components around structured backend outputs.
+
+SENSOR OUTPUT:
+
+{
+"raw_signal": ndarray,
+"snr_db": float,
+"label": int,
+"metadata": dict
+}
+
+RADAR RESULT SHOULD SUPPORT:
+
+{
+"range_profile": ndarray,
+"range_doppler_map": ndarray,
+"cfar_threshold": ndarray,
+"detections": ndarray,
+"snr_db": float,
+"configured_pfa": float,
+"empirical_pfa": float,
+"features": dict,
+"metadata": dict
+}
+
+THERMAL RESULT:
+
+{
+"thermal_frame": ndarray,
+"contrast_map": ndarray,
+"noise_field": ndarray,
+"noise_psd": data,
+"delta_M": float,
+"thermal_snr": float,
+"features": dict,
+"metadata": dict
+}
+
+ACOUSTIC RESULT:
+
+{
+"time_series": ndarray,
+"sample_rate": int,
+"lofar_image": ndarray,
+"frequencies": ndarray,
+"times": ndarray,
+"signal_excess_db": float,
+"features": dict,
+"metadata": dict
+}
+
+FEATURE SELECTION RESULT:
+
+{
+"feature_names": list,
+"relevance": array,
+"redundancy_matrix": array,
+"Q": array,
+"selected_indices": list,
+"selected_features": list,
+"objective_value": float,
+"brute_force_objective": float,
+"brute_force_selected": list,
+"subset_match": bool,
+"solver": str,
+"solver_metadata": dict
+}
+
+FUSION RESULT:
+
+{
+"weights": {
+"radar": float,
+"thermal": float,
+"acoustic": float
+},
+"fused_scores": array,
+"threshold": float,
+"fisher_objective": float,
+"between_class_scatter": matrix,
+"within_class_scatter": matrix,
+"solver": str,
+"solve_time_s": float,
+"metrics": dict,
+"confidence_intervals": dict
+}
+
+METRICS:
+
+{
+"detection_rate": float,
+"false_alarm_rate": float,
+"precision": float,
+"recall": float,
+"f1": float,
+"auc": float,
+"roc_fpr": array,
+"roc_tpr": array,
+"confusion_matrix": array
+}
+
+CONTRIBUTION RESULT:
+
+{
+"weights": dict,
+"ablation_delta_auc": dict,
+"shap_sensor_contribution": dict,
+"shap_feature_contribution": dict,
+"agreement_score": optional_float,
+"agreement_status": str
+}
+
+DEGRADATION RESULT:
+
+{
+"sensor": str,
+"degradation_type": str,
+"severity_values": array,
+"physical_parameter_values": array,
+"static_detection_retention": array,
+"adaptive_detection_retention": array,
+"static_ci": data,
+"adaptive_ci": data,
+"weights_by_severity": {
+"radar": array,
+"thermal": array,
+"acoustic": array
+},
+"contributions_by_severity": data
+}
+
+SCALING RESULT:
+
+{
+"problem_sizes": array,
+"results": [
+{
+"problem_size": int,
+"variable_count": int,
+"solver": str,
+"solve_time_s": float,
+"objective_value": float,
+"normalized_quality": float,
+"status": str,
+"metadata": dict
+}
+]
+}
+
+The designer must ensure that every graph, card, status indicator, and table can be populated from an explicit field in these contracts.
+
+If a proposed UI component requires data that does not exist in the contract:
+
+DO ONE OF TWO THINGS:
+
+1. Mark the required backend field explicitly.
+
+or
+
+2. Remove the component.
+
+Never invent decorative data.
+
+==================================================
+SECTION 26 — PRESENTATION MODE
+==============================
+
+Create a PRESENTATION MODE.
+
+Shortcut:
+
+F11 or dedicated button.
+
+Purpose:
+
+Hackathon voice-over and judge demonstration.
+
+Presentation mode:
+
+Hides sidebar.
+
+Hides unnecessary settings.
+
+Increases chart size.
+
+Increases key metric typography.
+
+Shows a minimal experiment context header.
+
+Keeps navigation between five demo stages:
+
+1. SENSOR EVIDENCE.
+
+2. FEATURE OPTIMIZATION.
+
+3. FUSION.
+
+4. DEGRADATION.
+
+5. COMPARISON.
+
+At bottom:
+
+Previous.
+
+Next.
+
+Optional keyboard arrows.
+
+PRESENTATION STAGE 1:
+
+Three sensor signals.
+
+Show weak radar.
+
+Weak thermal contrast.
+
+Weak LOFAR tonal evidence.
+
+Headline:
+
+INDIVIDUALLY WEAK EVIDENCE.
+
+PRESENTATION STAGE 2:
+
+Feature QUBO.
+
+Correlation matrix.
+
+Selected features.
+
+Brute-force vs QIEO validation.
+
+Headline:
+
+SELECT USEFUL EVIDENCE. PENALIZE REDUNDANCY.
+
+PRESENTATION STAGE 3:
+
+Fusion weight optimization.
+
+Before / after class separation.
+
+Weight distribution.
+
+Headline:
+
+OPTIMIZE SENSOR TRUST.
+
+PRESENTATION STAGE 4:
+
+Detection retention and trust migration synchronized.
+
+Headline:
+
+WHEN A SENSOR DEGRADES, TRUST MOVES.
+
+This is the most important stage.
+
+PRESENTATION STAGE 5:
+
+ROC.
+
+Baseline table.
+
+Scaling plots.
+
+Contribution agreement.
+
+Headline:
+
+SAME OBJECTIVE. DIFFERENT OPTIMIZERS. MEASURED RESULTS.
+
+Presentation mode must use ACTUAL EXPERIMENT DATA.
+
+No demo-specific hardcoded values.
+
+==================================================
+SECTION 27 — EXPORT SYSTEM
+==========================
+
+The application must help us create our hackathon presentation.
+
+Every important analysis page requires:
+
+EXPORT FIGURE.
+
+EXPORT DATA.
+
+COPY METRIC.
+
+Key pages require:
+
+EXPORT ANALYSIS BUNDLE.
+
+For Degradation Lab:
+
+Export:
+
+detection_retention.png
+
+trust_migration.png
+
+contribution_migration.png
+
+degradation_results.csv
+
+experiment_metadata.json
+
+For Baselines:
+
+roc_curve.png
+
+baseline_metrics.csv
+
+confusion_matrix.png
+
+For Scaling:
+
+solve_time_scaling.png
+
+objective_quality_scaling.png
+
+scaling_results.csv
+
+For Feature Space:
+
+qubo_matrix.png
+
+feature_correlation.png
+
+selected_features.csv
+
+For sensor pages:
+
+raw or processed visualization.
+
+feature values.
+
+metadata.
+
+Create:
+
+EXPORT FOR PPT.
+
+This should create a clean high-resolution chart.
+
+The designer must provide export-state mockups and naming conventions.
+
+==================================================
+SECTION 28 — REQUIRED DESIGN DELIVERABLES
+=========================================
+
+You must provide a COMPLETE design specification.
+
+Do not only generate pretty screenshots.
+
+Deliver:
+
+1. COMPLETE INFORMATION ARCHITECTURE.
+
+Every page.
+
+Every navigation route.
+
+Every page purpose.
+
+2. USER FLOW.
+
+New experiment.
+
+Configure sensors.
+
+Run simulations.
+
+Inspect signals.
+
+Extract features.
+
+Run QUBO feature selection.
+
+Validate result.
+
+Optimize fusion.
+
+Compare baselines.
+
+Run contribution analysis.
+
+Run degradation experiment.
+
+Run scaling experiment.
+
+Export results.
+
+3. DESIGN SYSTEM.
+
+Exact colors.
+
+Semantic color tokens.
+
+Sensor color tokens.
+
+Typography.
+
+Font sizes.
+
+Font weights.
+
+Spacing scale.
+
+Border widths.
+
+Corner radii.
+
+Button heights.
+
+Input heights.
+
+Sidebar dimensions.
+
+Topbar dimensions.
+
+Statusbar dimensions.
+
+Icon sizing.
+
+Chart padding.
+
+4. COMPONENT INVENTORY.
+
+Every reusable CustomTkinter component.
+
+Component name.
+
+Purpose.
+
+Props / data required.
+
+States.
+
+Interactions.
+
+5. PAGE WIREFRAMES.
+
+Mission Control.
+
+Radar.
+
+Thermal.
+
+Acoustic.
+
+Feature Space.
+
+Fusion Optimization.
+
+Baselines.
+
+Contribution.
+
+Degradation Lab.
+
+Scaling.
+
+Experiments.
+
+Solver.
+
+Logs.
+
+Settings.
+
+6. HIGH-FIDELITY DESIGNS.
+
+At minimum prioritize:
+
+Mission Control.
+
+Feature Space.
+
+Fusion Optimization.
+
+Degradation Lab.
+
+Baseline Comparison.
+
+7. CUSTOMTKINTER IMPLEMENTATION NOTES.
+
+For every major component:
+
+Recommended CTk widget.
+
+Grid layout concept.
+
+Scrollable or fixed.
+
+Chart embedding requirements.
+
+Update behaviour.
+
+8. BACKEND BINDING MAP.
+
+For every visible metric:
+
+UI component.
+
+Backend field.
+
+Formatting.
+
+Update event.
+
+Empty state.
+
+9. CHART SPECIFICATIONS.
+
+For every chart:
+
+Chart type.
+
+X variable.
+
+Y variable.
+
+Units.
+
+Series.
+
+Legend.
+
+Color mapping.
+
+Annotations.
+
+Confidence visualization.
+
+Empty state.
+
+10. RESPONSIVE DESKTOP RULES.
+
+1920×1080.
+
+1600×900.
+
+1366×768.
+
+Sidebar collapse behaviour.
+
+Inspector collapse behaviour.
+
+Chart stacking.
+
+Minimum sizes.
+
+11. PRESENTATION MODE.
+
+Full layout and interaction specification.
+
+12. ERROR / LOADING / PARTIAL STATES.
+
+For every major page.
+
+==================================================
+SECTION 29 — FINAL DESIGN PHILOSOPHY
+====================================
+
+At every point ask:
+
+"What scientific question is this screen answering?"
+
+Mission Control:
+
+What is each sensor seeing and what does fusion currently trust?
+
+Radar:
+
+Why is the radar target difficult to detect?
+
+Thermal:
+
+How much radiative contrast survives stealth suppression?
+
+Acoustic:
+
+Are target tonal components visible above ambient noise?
+
+Feature Space:
+
+Which evidence is useful without being redundant?
+
+Fusion Optimization:
+
+Which sensor trust distribution maximizes target/background separation?
+
+Baselines:
+
+Does optimized fusion actually outperform credible classical alternatives?
+
+Contribution:
+
+Which sensor materially changes detection performance?
+
+Degradation Lab:
+
+When one sensor becomes unreliable, does trust move and does detection survive?
+
+Scaling:
+
+How does optimizer speed and solution quality change as the problem grows?
+
+Experiments:
+
+Are we comparing equivalent experimental conditions?
+
+Solver:
+
+What optimization problem actually ran and what did the solver return?
+
+If a component does not help answer one of these questions, remove it.
+
+The frontend must communicate one central idea:
+
+THE TARGET IS NOT INVISIBLE.
+
+ITS EVIDENCE IS FRAGMENTED.
+
+OUR SYSTEM OPTIMIZES WHICH EVIDENCE MATTERS AND HOW MUCH EACH SENSOR SHOULD BE TRUSTED.
+
+The single most important visual inference in the entire application is:
+
+AS A SENSOR DEGRADES,
+
+ITS OPTIMIZED TRUST WEIGHT CHANGES,
+
+THE CONTRIBUTION HIERARCHY CHANGES,
+
+AND WE MEASURE WHETHER ADAPTIVE FUSION RETAINS MORE DETECTION PERFORMANCE THAN STATIC FUSION.
+
+Design the entire application around making that result impossible to misunderstand.
+
+Do not simplify the scientific content into generic "AI analytics."
+
+Do not invent quantum terminology.
+
+Do not create fake measurements.
+
+Do not assume QuantumNow wins.
+
+Do not hide classical baselines.
+
+Do not hide uncertainty.
+
+Do not make the interface beautiful at the expense of experimental traceability.
+
+The final result should look like a piece of research instrumentation that happens to be beautiful.
+
+Not a beautiful dashboard pretending to be research software.

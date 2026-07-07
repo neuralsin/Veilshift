@@ -1,26 +1,9 @@
-Frontend manual.txt
-QT-2.23 manual claude enhanced.md
-
-# Audit and temporary scripts
-audit*.py
-validate_oof_fix.py
-generate_audit_report.py
-
-# Audit reports and outputs
-audit_report.md
-audit_results.txt
-POST_REMEDIATION_HOSTILE_VERIFICATION.md
-pre_audit_manifest.json
-
 # Cache
 __pycache__/
 *.pyc
+.pytest_cache/
 
-# Diagnostic Forensics
-diagnostic_before_source_manifest.sha256
-diagnostics_*.txt
-diff_search_results.txt
-runtime_audit_results.txt
-runtime_scientific_audit.py
-output.txt
+# Diagnostic Forensics & Audits
+audit_artifacts/
 scratch/
+output.txt

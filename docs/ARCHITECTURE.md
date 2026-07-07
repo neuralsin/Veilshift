@@ -22,7 +22,7 @@ The pipeline runs completely autonomously once triggered by the UI. It chains 11
 
 The `ExperimentState` class is the single source of truth for the entire application.
 
-It is heavily structured using Python `dataclasses` and strictly divides `active_state` (full-data models) from `evaluation_state` (the strict OOF metrics). This schema separation is what physically prevents data leakage from ruining the UI's display.
+It is heavily structured using Python `dataclasses` and strictly divides `active_state` (full-data models) from `evaluation_state` (the strict OOF metrics). This schema separation prevents data leakage into the UI's display.
 
 ### Key Rules of State
 - UI bindings for primary metrics (AUC, FAR, Pd) MUST always read from `ExperimentState.metrics_result`.

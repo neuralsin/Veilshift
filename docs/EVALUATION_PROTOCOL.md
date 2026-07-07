@@ -1,6 +1,6 @@
 # Strict Out-Of-Fold (OOF) Evaluation Protocol
 
-Veilshift mathematically prevents data leakage (overfitting) by isolating all evaluation metrics to an Out-Of-Fold protocol. This is implemented in `science/evaluation/oof_protocol.py`.
+Veilshift uses an Out-Of-Fold protocol to prevent data leakage (overfitting) by isolating all evaluation metrics. This is implemented in `science/evaluation/oof_protocol.py`.
 
 ## The Problem with Traditional Machine Learning
 If you select features, optimize fusion weights, or calculate a threshold on the exact same data you use to evaluate performance, the model "memorizes" the test set. It looks like it performs flawlessly, but will fail catastrophically in production.

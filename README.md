@@ -18,13 +18,13 @@
 
 **Veilshift (QT-2.23)** is a highly advanced, scientific machine learning application designed to process, select, and fuse features from multiple sensor streams (Radar, Thermal, Acoustic) to detect targeted signals. 
 
-Built for absolute scientific rigor, Veilshift employs a strictly guaranteed **Out-Of-Fold (OOF) evaluation protocol** to ensure zero data leakage. It mathematically isolates testing data from training processes, meaning the metrics you see are mathematically proven to be honest and representative of real-world performance.
+Built for strict evaluation rigor, Veilshift employs an **Out-Of-Fold (OOF) evaluation protocol** to prevent data leakage. It isolates testing data from training processes to ensure that metrics remain representative of real-world performance.
 
 ### ✨ Key Features
-- **Built-in Physics Simulators:** Instantly generate realistic, multi-sensor data profiles without needing physical hardware.
+- **Built-in Physics Simulators:** Generate realistic, multi-sensor data profiles without physical hardware.
 - **Quantum Feature Selection (QUBO):** Optimal subset selection utilizing unconstrained binary optimization.
-- **Dynamic Sensor Fusion:** Automatically assigns continuous trust weights to individual sensors based on real-time performance.
-- **Zero-Leakage Guarantee:** A fortified 5-Fold Stratified evaluation pipeline that makes over-fitting mathematically impossible.
+- **Dynamic Sensor Fusion:** Assigns continuous trust weights to individual sensors based on real-time performance.
+- **Robust Evaluation:** A 5-Fold Stratified evaluation pipeline to mitigate over-fitting.
 - **Sleek UI:** Real-time visual bindings for deep pipeline inspection.
 
 ---
@@ -73,18 +73,18 @@ graph TD
 
 ### 🛡️ Out-Of-Fold (OOF) Protocol
 The most critical feature of Veilshift is its evaluation integrity. 
-Every model is trained strictly on a subset of data (Inner Train), tuned on a disjoint subset (Inner Val), and evaluated on an entirely unseen subset (Outer Test). This completely prevents data leakage and ensures that the reported AUC, Detection Rate, and False Alarm Rate are scientifically valid.
+Every model is trained strictly on a subset of data (Inner Train), tuned on a disjoint subset (Inner Val), and evaluated on an entirely unseen subset (Outer Test). This methodology prevents data leakage and ensures that the reported AUC, Detection Rate, and False Alarm Rate are scientifically sound.
 
 ---
 
 ## 📚 Documentation
 
-The heavy mathematical theories and strict protocol architectures have been modularized into the `docs/` folder for clean reading. 
+The mathematical models and evaluation architectures have been modularized into the `docs/` folder for clean reading. 
 
 - **[GitHub Walkthrough](docs/GITHUB_WALKTHROUGH.md)** — Step-by-step UI guide for users.
 - **[Architecture & State](docs/ARCHITECTURE.md)** — Deep dive into the pipeline orchestrator and state management.
 - **[Science Modules](docs/SCIENCE_MODULES.md)** — The math behind QUBO, Sensor Physics, and Fusion.
-- **[Evaluation Protocol](docs/EVALUATION_PROTOCOL.md)** — How Veilshift mathematically guarantees zero data leakage.
+- **[Evaluation Protocol](docs/EVALUATION_PROTOCOL.md)** — How Veilshift handles cross-validation to prevent data leakage.
 
 ---
 
