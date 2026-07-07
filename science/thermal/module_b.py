@@ -207,8 +207,8 @@ def generate_thermal_frame(
     # Contrast map (before noise)
     contrast_map = frame - bg_exitance
 
-    # Generate noise
-    dMdT = 4.0 * ((bg_eps + target_eps) / 2.0) * SIGMA_SB * bg_T**3
+    # Generate noise (strictly independent of target properties)
+    dMdT = 4.0 * bg_eps * SIGMA_SB * bg_T**3
     noise_amplitude = dMdT * netd_K
 
     if noise_model == "1/f":

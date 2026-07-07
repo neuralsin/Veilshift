@@ -270,7 +270,19 @@ def select_threshold_neyman_pearson(
     Returns (threshold, detection_rate, false_alarm_rate).
     """
     fpr, tpr, thresholds = roc_curve(labels, fused_scores)
-    idx = np.argmin(np.abs(fpr - target_far))
+    
+    valid_indices = np.where(fpr <= target_far)[0]
+    if len(valid_indices) == 0:
+        # Fallback if no point satisfies the FAR constraint
+        idx = np.argmin(fpr)
+    else:
+        # Maximize Pd among valid operating points
+        best_tpr = np.max(tpr[valid_indices])
+        # Find indices that achieve best TPR within valid FPR bounds
+        best_indices = valid_indices[tpr[valid_indices] == best_tpr]
+        # Tie-break: select highest FPR (lowest threshold)
+        idx = best_indices[-1]
+        
     return float(thresholds[idx]), float(tpr[idx]), float(fpr[idx])
 
 
