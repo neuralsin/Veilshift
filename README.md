@@ -3,8 +3,6 @@
   <p><strong>A Mathematically Rigorous, Multi-Sensor Fusion Pipeline</strong></p>
   
   [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
-  [![Status](https://img.shields.io/badge/Status-Hackathon_Ready-success.svg)]()
-  [![Leakage](https://img.shields.io/badge/Data_Leakage-Zero-brightgreen.svg)]()
 
   <p align="center">
     <a href="#overview">Overview</a> •
