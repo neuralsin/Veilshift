@@ -1,19 +1,8 @@
 """
 QT-2.23 — Module H: Fusion Weight Optimization (Rayleigh-LDA)
 
-Two parallel paths (both always kept working per the build manual):
-
-1. CONTINUOUS path (primary): SLSQP + Differential Evolution
-   standing in for BQPhy's native continuous mode.
-
-2. BINARY QUBO fallback: 4-bit fixed-point encoding of weights,
-   solved via neal SimulatedAnnealingSampler.
-
-The Rayleigh-LDA objective J'(w) = w^T(S_b - λ·S_w)w is the
-same objective solved by all classical baselines in Module F —
-only the solver differs. This is what makes the comparison valid.
-
-Detection threshold stays classical (Neyman-Pearson sweep, not QUBO).
+Optimizes fusion weights using SLSQP and selects Neyman-Pearson threshold.
+See `docs/SCIENCE_MODULES.md` for mathematical theory.
 """
 
 from __future__ import annotations

@@ -1,18 +1,8 @@
 """
 QT-2.23 — Out-of-Fold Evaluation Protocol
 
-Implements a scientifically valid 5-fold Stratified K-Fold out-of-fold (OOF)
-evaluation protocol that eliminates ALL data leakage from the pipeline.
-
-For each outer fold:
-  1. Split outer_train / outer_test via StratifiedKFold
-  2. Inner split: 80% inner_train / 20% inner_val (for threshold selection)
-  3. On inner_train ONLY: feature selection, classifier fitting, fusion optimization
-  4. On inner_val ONLY: Neyman-Pearson threshold selection
-  5. Refit classifiers on full outer_train with selected feature config
-  6. On outer_test: generate scores, apply fusion weights + threshold, store predictions
-
-Primary metrics are computed ONLY from pooled OOF predictions.
+Executes the strict 5-fold Stratified OOF evaluation to prevent data leakage.
+See `docs/EVALUATION_PROTOCOL.md` for the full mathematical theory.
 """
 
 from __future__ import annotations

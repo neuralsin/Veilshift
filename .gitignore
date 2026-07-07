@@ -15,3 +15,12 @@ pre_audit_manifest.json
 # Cache
 __pycache__/
 *.pyc
+
+# Diagnostic Forensics
+diagnostic_before_source_manifest.sha256
+diagnostics_*.txt
+diff_search_results.txt
+runtime_audit_results.txt
+runtime_scientific_audit.py
+output.txt
+scratch/

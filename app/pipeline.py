@@ -1,16 +1,8 @@
 """
 QT-2.23 — Pipeline Orchestrator (v2 — OOF Evaluation)
 
-Chains all science modules (A→D→E→G→H→K→F→L) into a complete
-experimental pipeline. Each module's output feeds the next.
-Called by TaskManager for background execution.
-
-SCHEMA v2 CHANGES:
-- Primary evaluation metrics now come from 5-fold stratified OOF protocol
-- Active model (full-data) is trained separately for interactive use
-- Baselines use identical fold assignments for fair comparison
-- All scientific performance claims derive from OOF predictions
-- In-sample metrics are NEVER displayed as evaluation performance
+Chains all science modules into a complete experimental pipeline.
+See `docs/ARCHITECTURE.md` for a full breakdown of the orchestration stages.
 """
 
 from __future__ import annotations

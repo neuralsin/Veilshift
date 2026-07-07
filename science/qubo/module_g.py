@@ -1,12 +1,8 @@
 """
 QT-2.23 — Module G: QUBO Feature Selection (MID-mRMR)
 
-MID (Mutual Information Difference) formulation — standard published
-mRMR variant (Peng, Long & Ding, 2005, IEEE TPAMI), directly QUBO-compatible.
-
-H(x) = -α·Σ Relᵢ·xᵢ + β·Σ Redᵢⱼ·xᵢ·xⱼ + γ·(Σxᵢ - k)²
-
-Brute-force validated before trusting any solver.
+Constructs the QUBO matrix for feature selection.
+See `docs/SCIENCE_MODULES.md` for the full mathematical formulation.
 """
 
 from __future__ import annotations
