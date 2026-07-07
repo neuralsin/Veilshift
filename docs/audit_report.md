@@ -57,7 +57,7 @@ A regex-based global search was run across all Python files for `pass`, `TODO`, 
 
 - **Status:** **COMPLETE & FLAWLESS**
 - **Architecture:** The application utilizes an asynchronous EventBus paradigm (`app/events.py`) mapped to CustomTkinter's `root.after()` to guarantee the UI never freezes during heavy Monte-Carlo or QUBO solves.
-- **Pages Built:** All 14 conceptual pages (Mission Control, Radar, Thermal, Acoustic, Feature Space, Fusion Optimization, Baselines, Contribution, Degradation Lab, Scaling, Experiments, Solver, Logs, Settings) have been instantiated with 1:1 fidelity to the MCP design tokens (`ui/theme/tokens.py`).
+- **Pages Built:** All 14 conceptual pages (System Overview, Radar, Thermal, Acoustic, Feature Space, Fusion Optimization, Baselines, Contribution, Degradation Lab, Scaling, Experiments, Solver, Logs, Settings) have been instantiated with 1:1 fidelity to the MCP design tokens (`ui/theme/tokens.py`).
 - **Data Binding:** Every metric card, progress bar, and Matplotlib chart derives its numbers exclusively from `app_state.current_experiment`, which serves as the single source of truth.
 
 ## 5. Final Assessment

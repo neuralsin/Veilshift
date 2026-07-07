@@ -27,4 +27,4 @@ Because the Outer Test set was completely hidden during feature selection, weigh
 ### 4. Pooling
 We repeat this 5 times until every single sample in the entire dataset has been predicted exactly once as an Outer Test sample. We pool all these predictions together and calculate our final canonical metrics (AUC, Pd, FAR).
 
-This guarantees the numbers shown in Mission Control are uncheated, robust, and mathematically sound.
+This guarantees the numbers shown in System Overview are uncheated, robust, and mathematically sound.

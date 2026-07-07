@@ -47,7 +47,7 @@ streamlit run app/main.py
 *(Note: adjust `app/main.py` if your entry point differs).*
 
 ### 3. Run a Mission
-Navigate to the **Mission Control** tab in your browser, configure your sensor parameters, and hit **Run Experiment**. The pipeline will simulate data, train models, and display mathematically sound performance metrics.
+Navigate to the **System Overview** tab in your browser, configure your sensor parameters, and hit **Run Experiment**. The pipeline will simulate data, train models, and display mathematically sound performance metrics.
 
 ---
 

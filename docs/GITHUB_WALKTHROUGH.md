@@ -19,9 +19,9 @@ A browser window will automatically open and drop you into the Veilshift dashboa
 
 ---
 
-## 🎛️ Mission Control
+## 🎛️ System Overview
 
-The **Mission Control** tab is your home base. 
+The **System Overview** tab is your home base. 
 Here, you don't need to manually string together Python scripts or worry about training vs. testing splits. The orchestrator handles everything.
 
 ### 1. Configure Your Sensors

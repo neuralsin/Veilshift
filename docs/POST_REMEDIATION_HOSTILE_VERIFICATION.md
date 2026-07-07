@@ -50,7 +50,7 @@ The remediation of the data leakage in QT-2.23 has been hostilely verified. The 
 | Trust migration is direct optimizer output | PROVEN TRUE | No manual clipping, trust migration natively shifts. | None | High |
 | Active/evaluation state separated | PROVEN TRUE | `active_model_fusion_weights` vs `evaluation_fusion_weights`. | None | High |
 | Legacy metrics quarantined | PROVEN TRUE | `is_legacy_evaluation` prevents display of legacy leaked AUC. | None | High |
-| Mission Control uses OOF | PROVEN TRUE | UI ledger shows value matches OOF AUC. | None | High |
+| System Overview uses OOF | PROVEN TRUE | UI ledger shows value matches OOF AUC. | None | High |
 | Baseline ROC uses OOF | PROVEN TRUE | Chart arrays match OOF TPR/FPR. | None | High |
 | Presentation Mode uses OOF | PROVEN TRUE | Values read from `oof_result`. | None | High |
 | No fake scientific values reach UI | PROVEN TRUE | UI bounds match OOF state perfectly. | None | High |
@@ -294,7 +294,7 @@ HACKATHON READY
 
 
 ## 47. FINAL VISUAL PARITY VERDICT BY SCREEN
-- Mission Control: NEAR-EXACT
+- System Overview: NEAR-EXACT
 - Fusion: NEAR-EXACT
 - Feature Space: EXACT
 - Baselines: EXACT

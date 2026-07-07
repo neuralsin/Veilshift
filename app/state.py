@@ -528,7 +528,7 @@ class ExperimentState:
 @dataclass
 class UIState:
     """UI-specific state (not serialized with experiments)."""
-    current_page: str = "Mission Control"
+    current_page: str = "System Overview"
     presentation_mode: bool = False
     presentation_stage: int = 0
     sidebar_collapsed: bool = False

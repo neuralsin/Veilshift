@@ -7,7 +7,7 @@ Main CTk window with:
 - Main workspace (page content, scrollable)
 - Bottom status strip (32px, solver status + running task)
 
-Layout per Stitch Mission Control screen: grid-based, row/column
+Layout per Stitch System Overview screen: grid-based, row/column
 weights correctly set, sidebar fixed, workspace fills remaining space.
 """
 
@@ -67,8 +67,8 @@ class AppShell(ctk.CTk):
         # Register all pages (lazy import)
         self._register_pages()
 
-        # Navigate to Mission Control
-        self.navigate_to("Mission Control")
+        # Navigate to System Overview
+        self.navigate_to("System Overview")
 
         # Keyboard shortcuts
         self.bind("<F11>", lambda e: self._toggle_presentation_mode())
@@ -175,7 +175,7 @@ class AppShell(ctk.CTk):
         title_frame.pack(side="left", padx=Spacing.XL, fill="y")
 
         self._page_title = ctk.CTkLabel(
-            title_frame, text="Mission Control",
+            title_frame, text="System Overview",
             font=(Typography.UI_FONT, 22, "bold"),
             text_color=Colors.TEXT_PRIMARY, anchor="w",
         )
@@ -259,7 +259,7 @@ class AppShell(ctk.CTk):
     # ============================================================
 
     PAGE_SUBTITLES = {
-        "Mission Control": "Which sensors contain evidence, and what does fusion currently trust?",
+        "System Overview": "Which sensors contain evidence, and what does fusion currently trust?",
         "Radar": "Why is the radar target difficult to detect?",
         "Thermal / IR": "How much radiative contrast survives stealth suppression?",
         "Acoustic / Sonar": "Are target tonal components visible above ambient noise?",
@@ -332,7 +332,7 @@ class AppShell(ctk.CTk):
         )
 
         page_map = {
-            "Mission Control": MissionControlPage,
+            "System Overview": MissionControlPage,
             "Radar": RadarPage,
             "Thermal / IR": ThermalPage,
             "Acoustic / Sonar": AcousticPage,

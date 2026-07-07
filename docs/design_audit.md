@@ -2,7 +2,7 @@
 
 ## Stitch Screen Inventory (Project 6046812853660105375)
 
-### Screen 1: Mission Control - Quantum Sensor Fusion (Revised)
+### Screen 1: System Overview - Quantum Sensor Fusion (Revised)
 - **Purpose**: Landing page showing sensor evidence and fused detection outcome
 - **Layout**: Sidebar (210px) | Topbar (56px) | Main workspace | Status strip (32px)
 - **Panels**: 4 metric cards (Target Regime, Active Modalities, Fused AUC w/ CI, FAR), 3 sensor evidence cards (Radar/Thermal/Acoustic with mini-viz, score, weight, rank, SNR), central fusion node (SVG with dashed animated paths), trust distribution bar, system inference panel
@@ -117,7 +117,7 @@
 ## Page Mapping — 14 Navigation Pages
 
 ### 5 Pages with Stitch Reference:
-1. ✅ **Mission Control** — Screen "Mission Control - Quantum Sensor Fusion (Revised)"
+1. ✅ **System Overview** — Screen "System Overview - Quantum Sensor Fusion (Revised)"
 2. ✅ **Radar** — Screen "Radar Sensor - Physics Simulation & SNR Analysis"
 3. ✅ **Feature Space** — Screen "Feature Space - QUBO Selection (Revised)"
 4. ✅ **Baselines** — Screen "Baseline Comparison - Performance Metrics (Revised)"

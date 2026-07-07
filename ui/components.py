@@ -63,9 +63,10 @@ class MetricCard(ctk.CTkFrame):
         val_frame = ctk.CTkFrame(self, fg_color="transparent")
         val_frame.grid(row=1, column=0, sticky="sw", padx=Spacing.LG, pady=(0, Spacing.LG))
 
+        font_size = 28 if len(value) <= 10 else 18
         self._value = ctk.CTkLabel(
             val_frame, text=value,
-            font=(Typography.MONO_FONT, 28, "bold"),
+            font=(Typography.MONO_FONT, font_size, "bold"),
             text_color=Colors.TEXT_PRIMARY,
             anchor="w",
         )
@@ -83,7 +84,8 @@ class MetricCard(ctk.CTkFrame):
             self._ci = None
 
     def update_value(self, value: str, ci_text: str = ""):
-        self._value.configure(text=value)
+        font_size = 28 if len(value) <= 10 else 18
+        self._value.configure(text=value, font=(Typography.MONO_FONT, font_size, "bold"))
         if self._ci and ci_text:
             self._ci.configure(text=ci_text)
 
