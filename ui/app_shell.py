@@ -232,7 +232,7 @@ class AppShell(ctk.CTk):
         # Solver status (left)
         self._solver_status = ctk.CTkLabel(
             self._statusbar,
-            text="SOLVER: UNAVAILABLE · Backup Active",
+            text="Quantum solver (QUBO/dimod): unavailable — classical simulated annealing fallback active.",
             font=(Typography.MONO_FONT, 10),
             text_color=Colors.TEXT_MUTED, anchor="w",
         )
@@ -467,3 +467,4 @@ class AppShell(ctk.CTk):
         self._save_state()
         self.task_manager.shutdown()
         self.destroy()
+        os._exit(0)

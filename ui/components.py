@@ -269,14 +269,21 @@ class SectionFrame(ctk.CTkFrame):
             header = ctk.CTkFrame(self, fg_color=Colors.BG_SURFACE, corner_radius=0, height=36)
             header.pack(fill="x", side="top")
             header.pack_propagate(False)
-            ctk.CTkLabel(
+            self.title_label = ctk.CTkLabel(
                 header, text=title,
                 font=(Typography.UI_FONT, 14, "bold"),
                 text_color=Colors.TEXT_PRIMARY, anchor="w",
-            ).pack(side="left", padx=Spacing.LG, pady=Spacing.SM)
+            )
+            self.title_label.pack(side="left", padx=Spacing.LG, pady=Spacing.SM)
+        else:
+            self.title_label = None
 
         self.content = ctk.CTkFrame(self, fg_color="transparent")
         self.content.pack(fill="both", expand=True, padx=Spacing.LG, pady=Spacing.LG)
+
+    def set_title(self, title: str):
+        if self.title_label:
+            self.title_label.configure(text=title)
 
 
 # ============================================================

@@ -182,7 +182,7 @@ class MissionControlPage(ctk.CTkScrollableFrame):
         ).pack(side="left", padx=(0, Spacing.SM))
 
         self._export_btn = ActionButton(
-            actions_row, text="EXPORT PRODUCTION MODEL",
+            actions_row, text="EXPORT EXPERIMENT RESULTS",
             command=self._export_model, primary=False,
         )
         self._export_btn.pack(side="left", padx=(0, Spacing.SM))

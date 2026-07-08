@@ -273,11 +273,14 @@ class RadarPage(ctk.CTkFrame):
                 lines.append(f"At SNR={r.snr_db:.1f} dB, the target should be detectable by radar alone.")
 
         if r.empirical_pfa is not None and r.configured_pfa is not None:
-            ratio = r.empirical_pfa / r.configured_pfa
-            if 0.5 < ratio < 2.0:
-                lines.append(f"CFAR calibration is consistent (Pfa_emp/Pfa_target = {ratio:.2f}).")
+            if r.empirical_pfa == 0.0:
+                lines.append(f"CFAR threshold too high (empirical Pfa = 0.0) — no false alarms triggered.")
             else:
-                lines.append(f"CFAR calibration shows deviation (ratio = {ratio:.2f}).")
+                ratio = r.empirical_pfa / r.configured_pfa
+                if 0.5 < ratio < 2.0:
+                    lines.append(f"CFAR calibration is consistent (Pfa_emp/Pfa_target = {ratio:.2f}).")
+                else:
+                    lines.append(f"CFAR calibration shows deviation (ratio = {ratio:.2f}).")
 
         self._inference.insert("0.0", "\n".join(lines))
         self._inference.configure(state="disabled")

@@ -77,7 +77,7 @@ class FeatureSpacePage(ctk.CTkScrollableFrame):
 
         match_str = "—"
         if r.subset_match is not None:
-            match_str = "✓ MATCH" if r.subset_match else "✗ MISMATCH"
+            match_str = "✓ Global optimum matched" if r.subset_match else "Heuristic ≠ Exhaustive optimum"
         self._bf_match.update_value(match_str)
 
         self._solver_card.update_value(r.solver or "—")
@@ -147,7 +147,8 @@ class FeatureSpacePage(ctk.CTkScrollableFrame):
 
                 ax.barh(range(n), r.relevance, color=colors, edgecolor=edge_colors, linewidth=2)
                 ax.set_yticks(range(n))
-                ax.set_yticklabels([n[:15] for n in r.feature_names], fontsize=7, color=ChartStyle.TEXT_COLOR)
+                truncated_names = [n[:22] + "..." if len(n) > 25 else n for n in r.feature_names]
+                ax.set_yticklabels(truncated_names, fontsize=7, color=ChartStyle.TEXT_COLOR)
                 ax.set_xlabel("Relevance", color=ChartStyle.LABEL_COLOR)
                 ax.tick_params(colors=ChartStyle.TICK_COLOR)
                 ax.invert_yaxis()
@@ -177,7 +178,7 @@ class FeatureSpacePage(ctk.CTkScrollableFrame):
             # Check if MIQ converged history is available
             convergence_history = getattr(r, "convergence_history", None)
             if convergence_history and len(convergence_history) > 0:
-                self._qubo_section.configure(title="Dinkelbach Parameter Convergence (\u03bb trajectory)")
+                self._qubo_section.set_title("Dinkelbach Parameter Convergence (\u03bb trajectory)")
                 fig3, ax3 = plt.subplots(figsize=(10, 3), facecolor=ChartStyle.FIGURE_FACECOLOR)
                 ax3.set_facecolor(ChartStyle.AXES_FACECOLOR)
                 
@@ -196,7 +197,7 @@ class FeatureSpacePage(ctk.CTkScrollableFrame):
                 canvas3.draw()
                 canvas3.get_tk_widget().pack(fill="both", expand=True)
             elif r.Q_matrix is not None:
-                self._qubo_section.configure(title="QUBO Matrix Q (MID mRMR Formulation)")
+                self._qubo_section.set_title("QUBO Matrix Q (MID mRMR Formulation)")
                 fig3, ax3 = plt.subplots(figsize=(10, 3), facecolor=ChartStyle.FIGURE_FACECOLOR)
                 ax3.set_facecolor(ChartStyle.AXES_FACECOLOR)
                 

@@ -2,9 +2,9 @@
   "model_id": "QT223-1783515259",
   "version": "2.0",
   "created_at": 1783515259.5509994,
-  "last_updated_at": 1783533361.346338,
+  "last_updated_at": 1783534592.7277534,
   "is_trained": true,
-  "total_samples_seen": 102000,
+  "total_samples_seen": 108000,
   "regime": "Low Observability",
   "sensor_names": [
     "radar",
@@ -40,14 +40,14 @@
     14
   ],
   "fusion_weights": {
-    "radar": 0.30561290873637564,
-    "thermal": 0.6771998531045293,
-    "acoustic": 0.017187238159095067
+    "radar": 0.2210184606458481,
+    "thermal": 0.07697888687485299,
+    "acoustic": 0.7020026524792989
   },
-  "threshold": 0.49129654582191823,
+  "threshold": 0.5072462017173239,
   "fisher_objective": -0.00017801748856955486,
-  "n_training_runs": 5,
-  "n_incremental_updates": 4,
+  "n_training_runs": 6,
+  "n_incremental_updates": 5,
   "training_history": [
     {
       "timestamp": 1783515259.5706267,
@@ -133,23 +133,40 @@
       },
       "threshold": 0.5184433461661307,
       "incremental": true
+    },
+    {
+      "timestamp": 1783534592.73127,
+      "regime": "Stealth",
+      "n_samples": 6000,
+      "auc": 0.5245613333333333,
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "false_alarm_rate": 0.0,
+      "fusion_weights": {
+        "radar": 0.30561290873637564,
+        "thermal": 0.6771998531045293,
+        "acoustic": 0.017187238159095067
+      },
+      "threshold": 0.49129654582191823,
+      "incremental": true
     }
   ],
   "sensor_classifiers": {
     "radar": {
       "type": "LogisticRegression",
       "n_coefs": 6,
-      "intercept": 7.273352743177733e-05
+      "intercept": -5.726665934117903e-05
     },
     "thermal": {
       "type": "LogisticRegression",
       "n_coefs": 5,
-      "intercept": 0.08720585667799592
+      "intercept": 0.022084256343150296
     },
     "acoustic": {
       "type": "LogisticRegression",
       "n_coefs": 6,
-      "intercept": -0.0008490274294016849
+      "intercept": 0.001037636793833262
     }
   }
 }
