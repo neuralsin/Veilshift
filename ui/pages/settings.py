@@ -54,6 +54,21 @@ class SettingsPage(ctk.CTkScrollableFrame):
         self._k_target = ParameterField(qubo_section.content, label="k (target features)", default="6")
         self._k_target.pack(fill="x", pady=2)
 
+        ctk.CTkLabel(qubo_section.content, text="Selection Method", font=(Typography.UI_FONT, 11, "bold"),
+                     text_color=Colors.TEXT_SECONDARY).pack(anchor="w", padx=Spacing.XS, pady=(4, 2))
+        self._fs_method = ctk.CTkOptionMenu(
+            qubo_section.content, values=["MID (Default)", "MIQ (Dinkelbach)"],
+            font=(Typography.UI_FONT, 11), fg_color=Colors.BG_DARKEST, button_color=Colors.BG_ELEVATED,
+            dropdown_fg_color=Colors.BG_CARD, text_color=Colors.TEXT_PRIMARY, height=Spacing.INPUT_HEIGHT,
+        )
+        self._fs_method.pack(fill="x", pady=2)
+
+        self._db_damping = ParameterField(qubo_section.content, label="Dinkelbach Damping", default="0.5")
+        self._db_damping.pack(fill="x", pady=2)
+
+        self._db_max_iter = ParameterField(qubo_section.content, label="Dinkelbach Max Iterations", default="15")
+        self._db_max_iter.pack(fill="x", pady=2)
+
         self._num_reads = ParameterField(qubo_section.content, label="SA reads", default="1000")
         self._num_reads.pack(fill="x", pady=2)
 
@@ -100,16 +115,30 @@ class SettingsPage(ctk.CTkScrollableFrame):
             anchor="w", pady=Spacing.LG)
 
     def refresh(self, exp: ExperimentState):
+        from app.state import FeatureSelectionMethod
         self._seed.set_value(str(exp.seed))
         self._samples.set_value(str(exp.radar_config.num_samples))
         self._alpha.set_value(str(exp.feature_config.alpha))
         self._beta.set_value(str(exp.feature_config.beta))
         self._gamma.set_value(str(exp.feature_config.gamma))
         self._k_target.set_value(str(exp.feature_config.k_target))
+        self._fs_method.set("MIQ (Dinkelbach)" if exp.feature_config.method == FeatureSelectionMethod.MIQ_DINKELBACH else "MID (Default)")
+        self._db_damping.set_value(str(exp.feature_config.dinkelbach_damping))
+        self._db_max_iter.set_value(str(exp.feature_config.dinkelbach_max_iter))
+        self._num_reads.set_value(str(exp.feature_config.num_reads))
         self._lam.set_value(str(exp.fusion_config.lam))
         self._restarts.set_value(str(exp.fusion_config.n_restarts))
+        self._bits.set_value(str(exp.fusion_config.bits_per_weight))
+        self._penalty.set_value(str(exp.fusion_config.simplex_penalty))
+        self._target_far.set_value(str(exp.fusion_config.target_far))
+
+        self._bootstrap.set_value(str(exp.evaluation_config.n_bootstrap))
+        self._ci_level.set_value(str(exp.evaluation_config.ci_level))
+        self._folds.set_value(str(exp.evaluation_config.n_folds))
+        self._seeds.set_value(str(exp.evaluation_config.n_seeds))
 
     def _apply(self):
+        from app.state import FeatureSelectionMethod
         exp = self._app.app_state.current_experiment
         try:
             exp.seed = int(self._seed.value)
@@ -124,6 +153,15 @@ class SettingsPage(ctk.CTkScrollableFrame):
             exp.feature_config.beta = float(self._beta.value)
             exp.feature_config.gamma = float(self._gamma.value)
             exp.feature_config.k_target = int(self._k_target.value)
+            
+            method_str = self._fs_method.get()
+            if "MIQ" in method_str:
+                exp.feature_config.method = FeatureSelectionMethod.MIQ_DINKELBACH
+            else:
+                exp.feature_config.method = FeatureSelectionMethod.MID_DEFAULT
+                
+            exp.feature_config.dinkelbach_damping = float(self._db_damping.value)
+            exp.feature_config.dinkelbach_max_iter = int(self._db_max_iter.value)
             exp.feature_config.num_reads = int(self._num_reads.value)
             exp.fusion_config.lam = float(self._lam.value)
             exp.fusion_config.n_restarts = int(self._restarts.value)

@@ -75,6 +75,12 @@ class FusionPage(ctk.CTkScrollableFrame):
         self._dist_chart = ctk.CTkFrame(self._dist_section.content, fg_color=Colors.BG_DARKEST, height=300)
         self._dist_chart.pack(fill="both", expand=True)
 
+        # Scatter Matrices
+        self._scatter_section = SectionFrame(container, title="Scatter Matrices (Rayleigh-LDA)")
+        self._scatter_section.pack(fill="x", pady=(0, Spacing.GRID_GAP))
+        self._scatter_chart = ctk.CTkFrame(self._scatter_section.content, fg_color=Colors.BG_DARKEST, height=250)
+        self._scatter_chart.pack(fill="both", expand=True)
+
     def refresh(self, exp: ExperimentState):
         fr = exp.fusion_result
         mr = exp.metrics_result
@@ -162,5 +168,42 @@ class FusionPage(ctk.CTkScrollableFrame):
                 canvas2 = FigureCanvasTkAgg(fig2, master=self._dist_chart)
                 canvas2.draw()
                 canvas2.get_tk_widget().pack(fill="both", expand=True)
+
+            # Scatter Matrices Heatmaps
+            for w in self._scatter_chart.winfo_children(): w.destroy()
+            if fr.S_b is not None and fr.S_w is not None:
+                fig3, (ax3a, ax3b) = plt.subplots(1, 2, figsize=(10, 3.5), facecolor=ChartStyle.FIGURE_FACECOLOR)
+                ax3a.set_facecolor(ChartStyle.AXES_FACECOLOR)
+                ax3b.set_facecolor(ChartStyle.AXES_FACECOLOR)
+
+                im3a = ax3a.imshow(fr.S_b, cmap="viridis")
+                ax3a.set_title("S_b (Between-Class Scatter)", color=ChartStyle.TEXT_COLOR)
+                ax3a.set_xticks([0, 1, 2])
+                ax3a.set_xticklabels(["Radar", "Thermal", "Acoustic"], fontsize=8, color=ChartStyle.TEXT_COLOR)
+                ax3a.set_yticks([0, 1, 2])
+                ax3a.set_yticklabels(["Radar", "Thermal", "Acoustic"], fontsize=8, color=ChartStyle.TEXT_COLOR)
+                fig3.colorbar(im3a, ax=ax3a)
+
+                im3b = ax3b.imshow(fr.S_w, cmap="plasma")
+                ax3b.set_title("S_w (Within-Class Scatter)", color=ChartStyle.TEXT_COLOR)
+                ax3b.set_xticks([0, 1, 2])
+                ax3b.set_xticklabels(["Radar", "Thermal", "Acoustic"], fontsize=8, color=ChartStyle.TEXT_COLOR)
+                ax3b.set_yticks([0, 1, 2])
+                ax3b.set_yticklabels(["Radar", "Thermal", "Acoustic"], fontsize=8, color=ChartStyle.TEXT_COLOR)
+                fig3.colorbar(im3b, ax=ax3b)
+
+                for ax in (ax3a, ax3b):
+                    ax.tick_params(colors=ChartStyle.TICK_COLOR)
+                    for s in ax.spines.values(): s.set_color(ChartStyle.AXES_EDGECOLOR)
+
+                fig3.tight_layout()
+                canvas3 = FigureCanvasTkAgg(fig3, master=self._scatter_chart)
+                canvas3.draw()
+                canvas3.get_tk_widget().pack(fill="both", expand=True)
+            else:
+                lbl = ctk.CTkLabel(self._scatter_chart, text="No scatter matrices data available. Run full pipeline first.",
+                                   font=(Typography.UI_FONT, 12), text_color=Colors.TEXT_MUTED)
+                lbl.pack(expand=True)
+
         except ImportError:
             pass

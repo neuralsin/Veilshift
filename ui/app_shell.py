@@ -404,6 +404,12 @@ class AppShell(ctk.CTk):
     # ACTIONS
     # ============================================================
 
+    def propagate_experiment_state(self):
+        """Force refresh on all loaded pages to synchronize visual fields with the state."""
+        for page in self._pages.values():
+            if hasattr(page, 'refresh'):
+                page.refresh(self.app_state.current_experiment)
+
     def _new_experiment(self):
         """Create a new experiment."""
         self.app_state.current_experiment = ExperimentState()
@@ -411,8 +417,7 @@ class AppShell(ctk.CTk):
             text="QTMReg_109-Wandering Wight"
         )
         # Refresh current page
-        if self._current_page and hasattr(self._current_page, 'refresh'):
-            self._current_page.refresh(self.app_state.current_experiment)
+        self.propagate_experiment_state()
 
     def _run_pipeline(self):
         """Run the full scientific pipeline in background."""

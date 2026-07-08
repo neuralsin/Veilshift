@@ -1,0 +1,211 @@
+{
+  "version": "QT-2.23-PRODUCTION",
+  "timestamp": "2026-07-08T11:33:34.273956+00:00",
+  "regime": "STEALTH",
+  "seed": 42,
+  "n_samples": 3000,
+  "selected_features": [
+    "radar_doppler_spread",
+    "thermal_edge_energy",
+    "thermal_hot_spot_area",
+    "acoustic_spectral_kurtosis",
+    "acoustic_peak_frequency"
+  ],
+  "feature_selection_frequency": {
+    "radar_doppler_spread": 5,
+    "radar_target_to_clutter": 1,
+    "thermal_edge_energy": 5,
+    "thermal_hot_spot_area": 5,
+    "acoustic_spectral_kurtosis": 4,
+    "acoustic_peak_frequency": 3,
+    "radar_peak_snr": 2,
+    "acoustic_tonal_to_broadband": 1,
+    "radar_clutter_kurtosis": 1,
+    "radar_cfar_exceedances": 1,
+    "acoustic_broadband_power": 1,
+    "acoustic_temporal_variability": 1
+  },
+  "fusion_weights": {
+    "Radar": 0.19858378831662002,
+    "Thermal": 0.6033288998585251,
+    "Acoustic": 0.1980873118248549
+  },
+  "fusion_weights_std": {
+    "Radar": 0.17645028053885523,
+    "Thermal": 0.1766243986049909,
+    "Acoustic": 0.10772240379141163
+  },
+  "decision_threshold": 0.5244124397792216,
+  "target_far": 0.01,
+  "oof_auc": 0.4992768888888889,
+  "bootstrap_ci": {
+    "mean": 0.5001966961349185,
+    "ci_lower": 0.4800798700025362,
+    "ci_upper": 0.5230537971375696
+  },
+  "aggregate_detection_rate": 0.013333333333333334,
+  "aggregate_far": 0.01,
+  "n_folds": 5,
+  "fold_details": [
+    {
+      "fold_idx": 0,
+      "selected_features": [
+        "radar_doppler_spread",
+        "radar_target_to_clutter",
+        "thermal_edge_energy",
+        "thermal_hot_spot_area",
+        "acoustic_spectral_kurtosis",
+        "acoustic_peak_frequency"
+      ],
+      "fusion_weights": {
+        "Radar": 0.06798460218388128,
+        "Thermal": 0.5588858786696905,
+        "Acoustic": 0.3731295191464282
+      },
+      "threshold": 0.5195649502961517,
+      "fisher_objective": -8.206586209133424e-05,
+      "auc": 0.5148444444444444,
+      "detection_rate": 0.01,
+      "false_alarm_rate": 0.006666666666666667
+    },
+    {
+      "fold_idx": 1,
+      "selected_features": [
+        "radar_peak_snr",
+        "radar_doppler_spread",
+        "thermal_edge_energy",
+        "thermal_hot_spot_area",
+        "acoustic_spectral_kurtosis",
+        "acoustic_tonal_to_broadband"
+      ],
+      "fusion_weights": {
+        "Radar": 0.5427613708475864,
+        "Thermal": 0.2819711576140354,
+        "Acoustic": 0.17526747153837818
+      },
+      "threshold": 0.5343660590981302,
+      "fisher_objective": -0.00017077309175424012,
+      "auc": 0.5199111111111112,
+      "detection_rate": 0.006666666666666667,
+      "false_alarm_rate": 0.0033333333333333335
+    },
+    {
+      "fold_idx": 2,
+      "selected_features": [
+        "radar_peak_snr",
+        "radar_doppler_spread",
+        "thermal_edge_energy",
+        "thermal_hot_spot_area",
+        "acoustic_spectral_kurtosis",
+        "acoustic_peak_frequency"
+      ],
+      "fusion_weights": {
+        "Radar": 0.07437972110745958,
+        "Thermal": 0.6990497253311574,
+        "Acoustic": 0.226570553561383
+      },
+      "threshold": 0.5246850719880106,
+      "fisher_objective": -9.408662343215966e-05,
+      "auc": 0.48412222222222223,
+      "detection_rate": 0.0,
+      "false_alarm_rate": 0.0033333333333333335
+    },
+    {
+      "fold_idx": 3,
+      "selected_features": [
+        "radar_doppler_spread",
+        "radar_clutter_kurtosis",
+        "thermal_edge_energy",
+        "thermal_hot_spot_area",
+        "acoustic_spectral_kurtosis",
+        "acoustic_peak_frequency"
+      ],
+      "fusion_weights": {
+        "Radar": 0.17311401305459173,
+        "Thermal": 0.7888705886433429,
+        "Acoustic": 0.038015398302065434
+      },
+      "threshold": 0.5190494610859215,
+      "fisher_objective": -8.739539332005868e-05,
+      "auc": 0.4738,
+      "detection_rate": 0.03,
+      "false_alarm_rate": 0.04
+    },
+    {
+      "fold_idx": 4,
+      "selected_features": [
+        "radar_cfar_exceedances",
+        "radar_doppler_spread",
+        "thermal_edge_energy",
+        "thermal_hot_spot_area",
+        "acoustic_broadband_power",
+        "acoustic_temporal_variability"
+      ],
+      "fusion_weights": {
+        "Radar": 0.13467923438958115,
+        "Thermal": 0.6878671490343993,
+        "Acoustic": 0.1774536165760196
+      },
+      "threshold": 0.5244124397792216,
+      "fisher_objective": -0.000121871031823072,
+      "auc": 0.5022444444444445,
+      "detection_rate": 0.006666666666666667,
+      "false_alarm_rate": 0.0
+    }
+  ],
+  "fold_thresholds": [
+    0.5195649502961517,
+    0.5343660590981302,
+    0.5246850719880106,
+    0.5190494610859215,
+    0.5244124397792216
+  ],
+  "sensor_configs": {
+    "radar": {
+      "rcs_m2": 0.01,
+      "range_m": 50000.0,
+      "transmit_power_W": 10000.0,
+      "frequency_hz": 10000000000.0,
+      "target_regime": "Low Observability"
+    },
+    "thermal": {
+      "target_temperature_K": 310.0,
+      "target_emissivity": 0.7275,
+      "bg_temperature_K": 290.0,
+      "bg_emissivity": 0.95,
+      "target_regime": "Low Observability"
+    },
+    "acoustic": {
+      "source_level_dB": 110.0,
+      "range_m": 5000.0,
+      "sea_state": 3,
+      "target_regime": "Low Observability"
+    }
+  },
+  "all_feature_names": [
+    "radar_peak_snr",
+    "radar_cfar_exceedances",
+    "radar_doppler_spread",
+    "radar_target_to_clutter",
+    "radar_clutter_skewness",
+    "radar_clutter_kurtosis",
+    "thermal_peak_contrast",
+    "thermal_edge_energy",
+    "thermal_hot_spot_area",
+    "thermal_contrast_to_noise",
+    "thermal_kurtosis",
+    "acoustic_tonal_power",
+    "acoustic_broadband_power",
+    "acoustic_spectral_kurtosis",
+    "acoustic_tonal_to_broadband",
+    "acoustic_peak_frequency",
+    "acoustic_temporal_variability"
+  ],
+  "sensor_feature_counts": {
+    "Radar": 6,
+    "Thermal": 5,
+    "Acoustic": 6
+  },
+  "n_total_features": 17,
+  "export_time_s": 14.212430477142334
+}

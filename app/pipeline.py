@@ -276,40 +276,63 @@ def run_full_pipeline(
     stage_num = 6
     stage_progress("BUILDING QUBO (Active Model)", 0.0, "MID-mRMR feature selection")
 
-    from science.qubo.module_g import run_feature_selection
+    from science.qubo.module_g import run_feature_selection, run_feature_selection_dinkelbach
+    from app.state import FeatureSelectionMethod
 
     def qubo_progress(stage="", progress=0.0, message=""):
         stage_progress("BUILDING QUBO (Active Model)", progress, message)
 
-    fs_data = run_feature_selection(
-        qubo_progress,
-        feature_matrix, labels, feature_names,
-        k_target=exp.feature_config.k_target,
-        alpha=exp.feature_config.alpha,
-        beta=exp.feature_config.beta,
-        gamma=exp.feature_config.gamma,
-        num_reads=exp.feature_config.num_reads,
-        run_brute_force=exp.feature_config.run_brute_force,
-    )
+    if exp.feature_config.method == FeatureSelectionMethod.MIQ_DINKELBACH:
+        fs_data = run_feature_selection_dinkelbach(
+            qubo_progress,
+            feature_matrix, labels, feature_names,
+            k_target=exp.feature_config.k_target,
+            alpha=exp.feature_config.alpha,
+            beta=exp.feature_config.beta,
+            gamma=exp.feature_config.gamma,
+            max_iter=exp.feature_config.dinkelbach_max_iter,
+            tol=exp.feature_config.dinkelbach_tol,
+            damping=exp.feature_config.dinkelbach_damping,
+            num_reads=exp.feature_config.num_reads,
+            run_brute_force=exp.feature_config.run_brute_force,
+        )
+    else:
+        fs_data = run_feature_selection(
+            qubo_progress,
+            feature_matrix, labels, feature_names,
+            k_target=exp.feature_config.k_target,
+            alpha=exp.feature_config.alpha,
+            beta=exp.feature_config.beta,
+            gamma=exp.feature_config.gamma,
+            num_reads=exp.feature_config.num_reads,
+            run_brute_force=exp.feature_config.run_brute_force,
+        )
 
+    exp.feature_result.method = fs_data.get("method", "MID (Default)")
     exp.feature_result.feature_names = fs_data["feature_names"]
     exp.feature_result.relevance = fs_data["relevance"]
     exp.feature_result.redundancy_matrix = fs_data["redundancy_matrix"]
-    exp.feature_result.Q_matrix = fs_data["Q_matrix"]
+    exp.feature_result.Q_matrix = fs_data.get("Q_matrix")
     exp.feature_result.selected_indices = fs_data["selected_indices"]
     exp.feature_result.selected_features = fs_data["selected_features"]
-    exp.feature_result.objective_value = fs_data["objective_value"]
-    exp.feature_result.brute_force_objective = fs_data["brute_force_objective"]
-    exp.feature_result.brute_force_selected = fs_data["brute_force_selected"]
-    exp.feature_result.subset_match = fs_data["subset_match"]
-    exp.feature_result.solver = fs_data["solver"]
-    exp.feature_result.solver_metadata = fs_data["solver_metadata"]
+    exp.feature_result.objective_value = fs_data.get("objective_value")
+    exp.feature_result.brute_force_objective = fs_data.get("brute_force_objective")
+    exp.feature_result.brute_force_selected = fs_data.get("brute_force_selected")
+    
+    # Check match vs MID brute force regardless of method
+    exp.feature_result.subset_match = fs_data.get("subset_match_vs_mid") if "subset_match_vs_mid" in fs_data else fs_data.get("subset_match")
+    
+    exp.feature_result.solver = fs_data.get("solver")
+    exp.feature_result.solver_metadata = fs_data.get("solver_metadata")
+    exp.feature_result.final_lambda = fs_data.get("final_lambda")
+    exp.feature_result.convergence_history = fs_data.get("convergence_history")
     exp.feature_result.status = ModuleStatus.COMPLETED
 
+    match_val = fs_data.get("subset_match_vs_mid") if "subset_match_vs_mid" in fs_data else fs_data.get("subset_match")
     event_bus.publish(Event(
         event_type=EventType.FEATURE_SELECTION_RESULT_UPDATED,
         source="FEATURE-QUBO",
-        message=f"Selected {len(fs_data['selected_features'])}/{len(feature_names)}, match={fs_data['subset_match']}",
+        message=f"Selected {len(fs_data['selected_features'])}/{len(feature_names)}, match={match_val}",
         data={"experiment_id": exp_id},
     ))
 

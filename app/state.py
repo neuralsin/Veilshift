@@ -74,6 +74,11 @@ class DegradationType(Enum):
     ACOUSTIC_REMOVAL = "Sensor Removal"
 
 
+class FeatureSelectionMethod(Enum):
+    MID_DEFAULT = "MID (Mutual Information Difference)"
+    MIQ_DINKELBACH = "MIQ (Dinkelbach Fractional Programming)"
+
+
 class TaskType(Enum):
     RADAR_SIMULATION = auto()
     THERMAL_SIMULATION = auto()
@@ -182,12 +187,17 @@ class AcousticConfig:
 @dataclass
 class FeatureSelectionConfig:
     """Module G configuration — Appendix B defaults."""
+    method: FeatureSelectionMethod = FeatureSelectionMethod.MID_DEFAULT
     alpha: float = 1.0       # Relevance weight
     beta: float = 1.0        # Redundancy penalty
     gamma: float = 2.0       # Cardinality penalty
     k_target: int = 6        # Target number of features
     num_reads: int = 1000    # neal sampler reads
     run_brute_force: bool = True  # Always validate
+    # Dinkelbach MIQ parameters (Section G.2)
+    dinkelbach_max_iter: int = 15
+    dinkelbach_tol: float = 1e-4
+    dinkelbach_damping: float = 0.5
 
 
 @dataclass
@@ -398,6 +408,7 @@ class DegradationResult:
     adaptive_ci_upper: Optional[np.ndarray] = None
     weights_by_severity: Optional[Dict[str, np.ndarray]] = None
     contributions_by_severity: Optional[Dict] = None
+    trust_migration: Optional[Dict] = None
     status: ModuleStatus = ModuleStatus.NOT_CONFIGURED
 
 
@@ -523,6 +534,43 @@ class ExperimentState:
             and hasattr(self.oof_result, 'is_valid')
             and self.oof_result.is_valid()
         )
+
+    def apply_regime_preset(self, regime: TargetRegime) -> None:
+        """
+        Apply a regime preset, updating all sensor configs at once.
+
+        CONVENTIONAL: high-SNR observable targets (AUC should approach 1.0)
+        STEALTH: sub-noise unobservable targets (AUC near chance is EXPECTED)
+        """
+        self.target_regime = regime
+
+        if regime == TargetRegime.CONVENTIONAL:
+            # Manual Appendix B conventional defaults
+            self.radar_config.rcs_m2 = 10.0
+            self.radar_config.range_m = 10000.0
+            self.radar_config.target_regime = TargetRegime.CONVENTIONAL
+
+            self.thermal_config.target_temperature_K = 400.0
+            self.thermal_config.target_emissivity = 0.9
+            self.thermal_config.target_regime = TargetRegime.CONVENTIONAL
+
+            self.acoustic_config.source_level_dB = 160.0
+            self.acoustic_config.range_m = 500.0
+            self.acoustic_config.target_regime = TargetRegime.CONVENTIONAL
+
+        elif regime == TargetRegime.STEALTH:
+            # Manual Appendix B stealth defaults (with corrected emissivity)
+            self.radar_config.rcs_m2 = 0.01
+            self.radar_config.range_m = 50000.0
+            self.radar_config.target_regime = TargetRegime.STEALTH
+
+            self.thermal_config.target_temperature_K = 310.0
+            self.thermal_config.target_emissivity = 0.7275  # Scientifically corrected
+            self.thermal_config.target_regime = TargetRegime.STEALTH
+
+            self.acoustic_config.source_level_dB = 110.0
+            self.acoustic_config.range_m = 5000.0
+            self.acoustic_config.target_regime = TargetRegime.STEALTH
 
 
 # ============================================================

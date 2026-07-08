@@ -283,3 +283,248 @@ def run_feature_selection(
         "solver": solver_metadata.get("solver", "neal"),
         "solver_metadata": solver_metadata,
     }
+
+
+# ============================================================
+# G.5 — [STRETCH] MIQ via Accelerated Dinkelbach (Section G.2)
+# ============================================================
+
+def solve_mrmr_dinkelbach(
+    relevance: np.ndarray,
+    redundancy_matrix: np.ndarray,
+    n_features: int,
+    k_target: int,
+    max_iter: int = 15,
+    tol: float = 1e-4,
+    damping: float = 0.5,
+    num_reads: int = 1000,
+    gamma: float = 2.0,
+    progress_callback: Optional[Callable] = None,
+) -> Tuple[np.ndarray, float, List[Dict[str, Any]]]:
+    """
+    Dinkelbach iteration for MIQ (Mutual Information Quotient) mRMR.
+
+    Optimizes the ratio Relevance / Redundancy via iterative
+    parametric QUBO sub-problems:
+
+        Q_k = diag(relevance) - λ_k * redundancy_matrix
+
+    with damped λ updates to mitigate non-monotonic convergence
+    under heuristic (non-exact) QUBO solvers.
+
+    Per the build manual (Section 2.2 / G.2):
+    - Dinkelbach converges superlinearly ONLY with exact sub-problem solving
+    - With heuristic solvers (SA), damping is mandatory
+    - λ convergence MUST be empirically verified, not assumed from theory
+
+    Parameters
+    ----------
+    relevance : (n_features,) array of feature relevance scores
+    redundancy_matrix : (n_features, n_features) pairwise redundancy
+    n_features : number of features
+    k_target : desired number of selected features
+    max_iter : maximum Dinkelbach iterations
+    tol : convergence tolerance for |λ_{k+1} - λ_k|
+    damping : blend factor for λ update (0 = no update, 1 = full jump)
+    num_reads : SA solver reads per iteration
+    gamma : cardinality penalty strength
+    progress_callback : optional progress reporter
+
+    Returns
+    -------
+    (best_x, final_lambda, convergence_history)
+    convergence_history is a list of dicts tracking each iteration
+    """
+    import dimod
+    import neal
+
+    lam = 0.0
+    x_opt = None
+    convergence_history = []
+
+    for k in range(max_iter):
+        if progress_callback:
+            progress_callback(
+                stage="Dinkelbach MIQ",
+                progress=k / max_iter,
+                message=f"Iteration {k+1}/{max_iter}, λ={lam:.6f}",
+            )
+
+        # Build parametric QUBO: maximize (relevance - λ * redundancy)
+        # subject to cardinality constraint
+        Q = np.zeros((n_features, n_features))
+        for i in range(n_features):
+            Q[i, i] = -relevance[i] + gamma * (1 - 2 * k_target)
+        for i in range(n_features):
+            for j in range(i + 1, n_features):
+                Q[i, j] = lam * redundancy_matrix[i, j] + 2 * gamma
+                Q[j, i] = Q[i, j]
+
+        # Solve sub-problem with SA
+        linear = {i: float(Q[i, i]) for i in range(n_features)}
+        quadratic = {}
+        for i in range(n_features):
+            for j in range(i + 1, n_features):
+                val = float(Q[i, j] + Q[j, i])
+                if abs(val) > 1e-15:
+                    quadratic[(i, j)] = val
+
+        bqm = dimod.BinaryQuadraticModel(linear, quadratic, 0.0, dimod.BINARY)
+        sampler = neal.SimulatedAnnealingSampler()
+        response = sampler.sample(bqm, num_reads=num_reads, seed=42 + k)
+
+        best = response.first
+        x_opt = np.array([best.sample.get(i, 0) for i in range(n_features)])
+
+        # Compute numerator and denominator of the MIQ ratio
+        numerator = float(x_opt @ relevance)
+        denominator = float(x_opt @ redundancy_matrix @ x_opt)
+
+        iteration_info = {
+            "iteration": k,
+            "lambda": lam,
+            "numerator": numerator,
+            "denominator": denominator,
+            "energy": float(best.energy),
+            "n_selected": int(np.sum(x_opt)),
+        }
+        convergence_history.append(iteration_info)
+
+        if denominator <= 1e-9:
+            # Degenerate: no redundancy among selected features
+            break
+
+        lam_unconstrained = numerator / denominator
+
+        # Damped update (per manual Section G.2):
+        # Blend with previous λ to prevent oscillation under heuristic solver
+        lam_next = damping * lam_unconstrained + (1 - damping) * lam
+
+        if abs(lam_next - lam) < tol:
+            lam = lam_next
+            convergence_history[-1]["converged"] = True
+            break
+
+        lam = lam_next
+
+    if progress_callback:
+        progress_callback(
+            stage="Dinkelbach MIQ complete",
+            progress=1.0,
+            message=f"Converged at λ={lam:.6f} after {len(convergence_history)} iterations",
+        )
+
+    return x_opt, lam, convergence_history
+
+
+def run_feature_selection_dinkelbach(
+    progress_callback: Callable,
+    features_matrix: np.ndarray,
+    labels: np.ndarray,
+    feature_names: List[str],
+    k_target: int = 6,
+    alpha: float = 1.0,
+    beta: float = 1.0,
+    gamma: float = 2.0,
+    max_iter: int = 15,
+    tol: float = 1e-4,
+    damping: float = 0.5,
+    num_reads: int = 1000,
+    run_brute_force: bool = True,
+) -> Dict[str, Any]:
+    """
+    Full MIQ-Dinkelbach feature selection pipeline (Section G.2 stretch).
+
+    Runs the Dinkelbach iteration, validates against brute force,
+    and returns the selected features with convergence diagnostics.
+    """
+    n_features = features_matrix.shape[1]
+
+    # Compute relevance and redundancy (same as MID)
+    progress_callback(
+        stage="Computing relevance/redundancy",
+        progress=0.05,
+        message=f"MIQ-Dinkelbach, damping={damping}, max_iter={max_iter}",
+    )
+
+    relevance = np.zeros(n_features)
+    for i in range(n_features):
+        feat_std = np.std(features_matrix[:, i])
+        if feat_std < 1e-12:
+            relevance[i] = 0.0
+        else:
+            corr = np.corrcoef(features_matrix[:, i], labels)[0, 1]
+            relevance[i] = abs(corr) if not np.isnan(corr) else 0.0
+
+    redundancy = np.zeros((n_features, n_features))
+    for i in range(n_features):
+        for j in range(i + 1, n_features):
+            si = np.std(features_matrix[:, i])
+            sj = np.std(features_matrix[:, j])
+            if si < 1e-12 or sj < 1e-12:
+                redundancy[i, j] = redundancy[j, i] = 0.0
+            else:
+                corr = np.corrcoef(features_matrix[:, i], features_matrix[:, j])[0, 1]
+                val = abs(corr) if not np.isnan(corr) else 0.0
+                redundancy[i, j] = redundancy[j, i] = val
+
+    # Brute-force validation (same MID QUBO for reference)
+    bf_x, bf_energy, bf_indices = None, None, None
+    if run_brute_force and n_features <= 20:
+        progress_callback(
+            stage="Brute force validation (MID reference)",
+            progress=0.10,
+            message=f"C({n_features},{k_target}) subsets",
+        )
+        Q_mid, _, _ = build_feature_selection_qubo(
+            features_matrix, labels, k_target, alpha, beta, gamma
+        )
+        bf_x, bf_energy, bf_indices = brute_force_feature_selection(
+            Q_mid, n_features, k_target, progress_callback
+        )
+
+    # Run Dinkelbach iteration
+    progress_callback(
+        stage="Dinkelbach iteration",
+        progress=0.30,
+        message="Starting MIQ optimization",
+    )
+    solver_x, final_lambda, convergence_history = solve_mrmr_dinkelbach(
+        relevance, redundancy, n_features, k_target,
+        max_iter, tol, damping, num_reads, gamma,
+        progress_callback,
+    )
+
+    selected_indices = [i for i in range(n_features) if solver_x[i] > 0.5]
+    selected_features = [feature_names[i] for i in selected_indices] if feature_names else []
+    bf_selected_names = [feature_names[i] for i in bf_indices] if bf_indices and feature_names else []
+
+    subset_match = None
+    if bf_indices is not None:
+        subset_match = set(selected_indices) == set(bf_indices)
+
+    progress_callback(
+        stage="MIQ feature selection complete",
+        progress=1.0,
+        message=f"Selected {len(selected_indices)}/{n_features}, "
+                f"λ={final_lambda:.4f}, match_MID={subset_match}",
+    )
+
+    return {
+        "method": "MIQ-Dinkelbach",
+        "feature_names": feature_names,
+        "relevance": relevance,
+        "redundancy_matrix": redundancy,
+        "selected_indices": selected_indices,
+        "selected_features": selected_features,
+        "final_lambda": final_lambda,
+        "convergence_history": convergence_history,
+        "n_iterations": len(convergence_history),
+        "converged": any(h.get("converged", False) for h in convergence_history),
+        "damping": damping,
+        # MID brute-force reference
+        "brute_force_selected": bf_indices,
+        "brute_force_selected_features": bf_selected_names,
+        "subset_match_vs_mid": subset_match,
+    }
+

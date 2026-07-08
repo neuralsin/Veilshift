@@ -1,0 +1,152 @@
+{
+  "version": "QT-2.23-PRODUCTION",
+  "timestamp": "2026-07-08T11:32:16.428994+00:00",
+  "regime": "CONVENTIONAL",
+  "seed": 101,
+  "n_samples": 500,
+  "selected_features": [
+    "radar_doppler_spread",
+    "thermal_hot_spot_area",
+    "acoustic_peak_frequency",
+    "acoustic_temporal_variability"
+  ],
+  "feature_selection_frequency": {
+    "radar_doppler_spread": 3,
+    "thermal_hot_spot_area": 3,
+    "acoustic_peak_frequency": 3,
+    "acoustic_temporal_variability": 3
+  },
+  "fusion_weights": {
+    "Radar": 0.13524031044297705,
+    "Thermal": 0.07248759165775231,
+    "Acoustic": 0.7922720978992707
+  },
+  "fusion_weights_std": {
+    "Radar": 0.140084621901466,
+    "Thermal": 0.054948261115673525,
+    "Acoustic": 0.1513156072622885
+  },
+  "decision_threshold": 0.9999997424636515,
+  "target_far": 0.01,
+  "oof_auc": 1.0,
+  "bootstrap_ci": {
+    "mean": 1.0,
+    "ci_lower": 0.9999999999999999,
+    "ci_upper": 1.0
+  },
+  "aggregate_detection_rate": 0.848,
+  "aggregate_far": 0.0,
+  "n_folds": 3,
+  "fold_details": [
+    {
+      "fold_idx": 0,
+      "selected_features": [
+        "radar_doppler_spread",
+        "thermal_hot_spot_area",
+        "acoustic_peak_frequency",
+        "acoustic_temporal_variability"
+      ],
+      "fusion_weights": {
+        "Radar": 0.3329965480274931,
+        "Thermal": 0.07840283971020394,
+        "Acoustic": 0.5886006122623029
+      },
+      "threshold": 0.9999995566558291,
+      "fisher_objective": 0.9999936234323598,
+      "auc": 1.0,
+      "detection_rate": 0.8928571428571429,
+      "false_alarm_rate": 0.0
+    },
+    {
+      "fold_idx": 1,
+      "selected_features": [
+        "radar_doppler_spread",
+        "thermal_hot_spot_area",
+        "acoustic_peak_frequency",
+        "acoustic_temporal_variability"
+      ],
+      "fusion_weights": {
+        "Radar": 0.026119886625610586,
+        "Thermal": 0.13663231095732126,
+        "Acoustic": 0.8372478024170681
+      },
+      "threshold": 0.9999999208879673,
+      "fisher_objective": 0.9999933343740182,
+      "auc": 1.0,
+      "detection_rate": 0.9879518072289156,
+      "false_alarm_rate": 0.0
+    },
+    {
+      "fold_idx": 2,
+      "selected_features": [
+        "radar_doppler_spread",
+        "thermal_hot_spot_area",
+        "acoustic_peak_frequency",
+        "acoustic_temporal_variability"
+      ],
+      "fusion_weights": {
+        "Radar": 0.0466044966758274,
+        "Thermal": 0.0024276243057317327,
+        "Acoustic": 0.9509678790184409
+      },
+      "threshold": 0.9999997424636515,
+      "fisher_objective": 0.9999994056842603,
+      "auc": 1.0,
+      "detection_rate": 0.9879518072289156,
+      "false_alarm_rate": 0.0
+    }
+  ],
+  "fold_thresholds": [
+    0.9999995566558291,
+    0.9999999208879673,
+    0.9999997424636515
+  ],
+  "sensor_configs": {
+    "radar": {
+      "rcs_m2": 10.0,
+      "range_m": 10000.0,
+      "transmit_power_W": 10000.0,
+      "frequency_hz": 10000000000.0,
+      "target_regime": "Conventional"
+    },
+    "thermal": {
+      "target_temperature_K": 400.0,
+      "target_emissivity": 0.9,
+      "bg_temperature_K": 290.0,
+      "bg_emissivity": 0.95,
+      "target_regime": "Conventional"
+    },
+    "acoustic": {
+      "source_level_dB": 160.0,
+      "range_m": 500.0,
+      "sea_state": 3,
+      "target_regime": "Conventional"
+    }
+  },
+  "all_feature_names": [
+    "radar_peak_snr",
+    "radar_cfar_exceedances",
+    "radar_doppler_spread",
+    "radar_target_to_clutter",
+    "radar_clutter_skewness",
+    "radar_clutter_kurtosis",
+    "thermal_peak_contrast",
+    "thermal_edge_energy",
+    "thermal_hot_spot_area",
+    "thermal_contrast_to_noise",
+    "thermal_kurtosis",
+    "acoustic_tonal_power",
+    "acoustic_broadband_power",
+    "acoustic_spectral_kurtosis",
+    "acoustic_tonal_to_broadband",
+    "acoustic_peak_frequency",
+    "acoustic_temporal_variability"
+  ],
+  "sensor_feature_counts": {
+    "Radar": 6,
+    "Thermal": 5,
+    "Acoustic": 6
+  },
+  "n_total_features": 17,
+  "export_time_s": 2.4518141746520996
+}

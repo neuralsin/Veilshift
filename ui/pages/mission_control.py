@@ -15,7 +15,7 @@ import numpy as np
 
 from ui.theme.tokens import Colors, Typography, Spacing, Radii
 from ui.components import MetricCard, SensorCard, SectionFrame, EmptyState, ActionButton
-from app.state import ExperimentState, ModuleStatus
+from app.state import ExperimentState, ModuleStatus, TargetRegime
 
 
 class MissionControlPage(ctk.CTkScrollableFrame):
@@ -37,6 +37,24 @@ class MissionControlPage(ctk.CTkScrollableFrame):
         container = ctk.CTkFrame(self, fg_color="transparent")
         container.pack(fill="both", expand=True, padx=Spacing.PAGE_PADDING, pady=Spacing.PAGE_PADDING)
         container.grid_columnconfigure(0, weight=1)
+
+        # TOP BAR: Target Regime presets selection (regime-aware AUC hardening)
+        top_bar = ctk.CTkFrame(container, fg_color=Colors.BG_CARD, corner_radius=Radii.DEFAULT,
+                               border_color=Colors.BORDER_SUBTLE, border_width=1)
+        top_bar.pack(fill="x", pady=(0, Spacing.GRID_GAP))
+        top_bar_inner = ctk.CTkFrame(top_bar, fg_color="transparent")
+        top_bar_inner.pack(fill="x", padx=Spacing.LG, pady=Spacing.LG)
+        
+        ctk.CTkLabel(top_bar_inner, text="TARGET REGIME PRESET:", font=(Typography.UI_FONT, 11, "bold"),
+                     text_color=Colors.TEXT_SECONDARY).pack(side="left", padx=(0, Spacing.SM))
+                     
+        self._regime_select = ctk.CTkOptionMenu(
+            top_bar_inner, values=["STEALTH (Low Observability Presets)", "CONVENTIONAL (High SNR Presets)"],
+            font=(Typography.UI_FONT, 11), fg_color=Colors.BG_DARKEST, button_color=Colors.BG_ELEVATED,
+            dropdown_fg_color=Colors.BG_CARD, text_color=Colors.TEXT_PRIMARY, width=280, height=Spacing.INPUT_HEIGHT,
+            command=self._on_regime_changed,
+        )
+        self._regime_select.pack(side="left")
 
         # ROW 1: 4 Metric cards
         metrics_row = ctk.CTkFrame(container, fg_color="transparent")
@@ -156,6 +174,12 @@ class MissionControlPage(ctk.CTkScrollableFrame):
             command=self._new_experiment, primary=False,
         ).pack(side="left", padx=(0, Spacing.SM))
 
+        self._export_btn = ActionButton(
+            actions_row, text="EXPORT PRODUCTION MODEL",
+            command=self._export_model, primary=False,
+        )
+        self._export_btn.pack(side="left", padx=(0, Spacing.SM))
+
         # Empty state overlay
         self._empty_state = EmptyState(
             container,
@@ -170,6 +194,12 @@ class MissionControlPage(ctk.CTkScrollableFrame):
         """Refresh all Mission Control data from experiment state."""
         # Target regime
         self._target_regime.update_value(exp.target_regime.value.upper())
+
+        # Sync regime select preset dropdown
+        if exp.target_regime == TargetRegime.STEALTH:
+            self._regime_select.set("STEALTH (Low Observability Presets)")
+        elif exp.target_regime == TargetRegime.CONVENTIONAL:
+            self._regime_select.set("CONVENTIONAL (High SNR Presets)")
 
         # Active modalities
         active = exp.active_modalities
@@ -242,6 +272,50 @@ class MissionControlPage(ctk.CTkScrollableFrame):
             self._inference_text.insert("0.0", "\n".join(lines))
 
         self._inference_text.configure(state="disabled")
+
+    def _on_regime_changed(self, choice: str):
+        from app.state import TargetRegime
+        exp = self._app.app_state.current_experiment
+        if "STEALTH" in choice:
+            exp.apply_regime_preset(TargetRegime.STEALTH)
+        else:
+            exp.apply_regime_preset(TargetRegime.CONVENTIONAL)
+        
+        self._app.propagate_experiment_state()
+
+    def _export_model(self):
+        from app.state import TaskType, TargetRegime
+        from science.export.production_export import export_production_model
+        
+        exp = self._app.app_state.current_experiment
+        regime_str = "CONVENTIONAL" if exp.target_regime == TargetRegime.CONVENTIONAL else "STEALTH"
+        
+        self._export_btn.set_running(True)
+        
+        def run_export(progress_callback, *args):
+            # Run the production export module with exact parameters
+            manifest = export_production_model(
+                output_dir="production_export",
+                regime=regime_str,
+                seed=exp.seed,
+                num_samples=exp.radar_config.num_samples,
+                n_folds=exp.evaluation_config.n_folds,
+                n_bootstrap=exp.evaluation_config.n_bootstrap,
+                k_target=exp.feature_config.k_target,
+                target_far=exp.fusion_config.target_far,
+                progress_callback=progress_callback,
+            )
+            return manifest
+            
+        def on_export_done(result_future):
+            self._export_btn.set_running(False)
+            
+        self._app.task_manager.submit(
+            TaskType.EXPERIMENT_EXPORT,
+            exp.experiment_id,
+            run_export,
+            callback=on_export_done,
+        )
 
     def _run_pipeline(self):
         self._run_btn.set_running(True)

@@ -119,8 +119,34 @@ class DegradationPage(ctk.CTkScrollableFrame):
             canvas.draw()
             canvas.get_tk_widget().pack(fill="both", expand=True)
 
-            # Trust migration
-            if dr.weights_by_severity:
+            # Trust migration (Section 3.4 stretch)
+            trust_migration = getattr(dr, "trust_migration", None)
+            if trust_migration and "ablation_contributions" in trust_migration:
+                for w in self._trust_chart.winfo_children(): w.destroy()
+                fig2, ax2 = plt.subplots(figsize=(6, 4), facecolor=ChartStyle.FIGURE_FACECOLOR)
+                ax2.set_facecolor(ChartStyle.AXES_FACECOLOR)
+                sensor_colors = {"radar": Colors.RADAR, "thermal": Colors.THERMAL, "acoustic": Colors.ACOUSTIC}
+
+                ablation_data = trust_migration["ablation_contributions"]
+                for sensor, contribs in ablation_data.items():
+                    ax2.plot(dr.severity_values, contribs, 'o-',
+                             color=sensor_colors.get(sensor, Colors.TEXT_MUTED),
+                             linewidth=2, markersize=5, label=f"{sensor.title()} (Ablation \u0394AUC)")
+
+                ax2.set_xlabel("Degradation Severity", color=ChartStyle.LABEL_COLOR)
+                ax2.set_ylabel("Normalized Contribution", color=ChartStyle.LABEL_COLOR)
+                ax2.set_title("Trust Migration (Section 3.4)", color=ChartStyle.TEXT_COLOR)
+                ax2.legend(fontsize=9, facecolor=ChartStyle.AXES_FACECOLOR, edgecolor=ChartStyle.GRID_COLOR,
+                           labelcolor=ChartStyle.TEXT_COLOR)
+                ax2.grid(True, color=ChartStyle.GRID_COLOR, alpha=ChartStyle.GRID_ALPHA)
+                ax2.tick_params(colors=ChartStyle.TICK_COLOR)
+                for s in ax2.spines.values(): s.set_color(ChartStyle.AXES_EDGECOLOR)
+                fig2.tight_layout()
+                canvas2 = FigureCanvasTkAgg(fig2, master=self._trust_chart)
+                canvas2.draw()
+                canvas2.get_tk_widget().pack(fill="both", expand=True)
+            elif dr.weights_by_severity:
+                # Fallback to weights if contributions not computed
                 for w in self._trust_chart.winfo_children(): w.destroy()
                 fig2, ax2 = plt.subplots(figsize=(6, 4), facecolor=ChartStyle.FIGURE_FACECOLOR)
                 ax2.set_facecolor(ChartStyle.AXES_FACECOLOR)
@@ -193,6 +219,7 @@ class DegradationPage(ctk.CTkScrollableFrame):
             dr.static_auc = result["static_auc"]
             dr.adaptive_auc = result["adaptive_auc"]
             dr.weights_by_severity = result["weights_by_severity"]
+            dr.trust_migration = result.get("trust_migration")
             dr.status = ModuleStatus.COMPLETED
             return result
 

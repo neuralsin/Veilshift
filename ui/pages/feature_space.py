@@ -103,6 +103,9 @@ class FeatureSpacePage(ctk.CTkScrollableFrame):
         # Active model selection
         if r.selected_features:
             lines.append("  ── ACTIVE MODEL SELECTION ──")
+            lines.append(f"  Method:               {r.method or 'MID (Default)'}")
+            if getattr(r, "final_lambda", None) is not None:
+                lines.append(f"  Final \u03bb value:        {r.final_lambda:.6f}")
             for i, name in enumerate(r.selected_features):
                 lines.append(f"  [{i+1}] {name}")
             if r.objective_value is not None:
@@ -160,7 +163,6 @@ class FeatureSpacePage(ctk.CTkScrollableFrame):
                 fig2, ax2 = plt.subplots(figsize=(6, 5), facecolor=ChartStyle.FIGURE_FACECOLOR)
                 ax2.set_facecolor(ChartStyle.AXES_FACECOLOR)
                 im = ax2.imshow(r.redundancy_matrix, cmap="magma", aspect="auto", vmin=0, vmax=1)
-                ax2.set_title("Redundancy", color=ChartStyle.TEXT_COLOR)
                 ax2.tick_params(colors=ChartStyle.TICK_COLOR)
                 fig2.colorbar(im, ax=ax2)
                 for s in ax2.spines.values(): s.set_color(ChartStyle.AXES_EDGECOLOR)
@@ -168,6 +170,50 @@ class FeatureSpacePage(ctk.CTkScrollableFrame):
                 canvas2 = FigureCanvasTkAgg(fig2, master=self._redundancy_chart)
                 canvas2.draw()
                 canvas2.get_tk_widget().pack(fill="both", expand=True)
+
+            # QUBO matrix heatmap or Dinkelbach convergence history (Section G.3)
+            for w in self._qubo_chart.winfo_children(): w.destroy()
+            
+            # Check if MIQ converged history is available
+            convergence_history = getattr(r, "convergence_history", None)
+            if convergence_history and len(convergence_history) > 0:
+                self._qubo_section.configure(title="Dinkelbach Parameter Convergence (\u03bb trajectory)")
+                fig3, ax3 = plt.subplots(figsize=(10, 3), facecolor=ChartStyle.FIGURE_FACECOLOR)
+                ax3.set_facecolor(ChartStyle.AXES_FACECOLOR)
+                
+                iters = [h["iteration"] + 1 for h in convergence_history]
+                lambdas = [h["lambda"] for h in convergence_history]
+                
+                ax3.plot(iters, lambdas, "o-", color=Colors.RADAR, linewidth=2, label="\u03bb_k")
+                ax3.set_xlabel("Dinkelbach Iteration", color=ChartStyle.LABEL_COLOR)
+                ax3.set_ylabel("\u03bb value", color=ChartStyle.LABEL_COLOR)
+                ax3.set_title("Fractional Ratio Objective Parameter (\u03bb)", color=ChartStyle.TEXT_COLOR)
+                ax3.grid(True, color=ChartStyle.GRID_COLOR, alpha=ChartStyle.GRID_ALPHA)
+                ax3.tick_params(colors=ChartStyle.TICK_COLOR)
+                for s in ax3.spines.values(): s.set_color(ChartStyle.AXES_EDGECOLOR)
+                fig3.tight_layout()
+                canvas3 = FigureCanvasTkAgg(fig3, master=self._qubo_chart)
+                canvas3.draw()
+                canvas3.get_tk_widget().pack(fill="both", expand=True)
+            elif r.Q_matrix is not None:
+                self._qubo_section.configure(title="QUBO Matrix Q (MID mRMR Formulation)")
+                fig3, ax3 = plt.subplots(figsize=(10, 3), facecolor=ChartStyle.FIGURE_FACECOLOR)
+                ax3.set_facecolor(ChartStyle.AXES_FACECOLOR)
+                
+                im3 = ax3.imshow(r.Q_matrix, cmap="coolwarm", aspect="auto")
+                ax3.tick_params(colors=ChartStyle.TICK_COLOR)
+                fig3.colorbar(im3, ax=ax3)
+                for s in ax3.spines.values(): s.set_color(ChartStyle.AXES_EDGECOLOR)
+                fig3.tight_layout()
+                canvas3 = FigureCanvasTkAgg(fig3, master=self._qubo_chart)
+                canvas3.draw()
+                canvas3.get_tk_widget().pack(fill="both", expand=True)
+            else:
+                self._qubo_section.configure(title="QUBO Matrix / Convergence Diagnostics")
+                # Draw empty state inside the frame if no data
+                lbl = ctk.CTkLabel(self._qubo_chart, text="No QUBO matrix or convergence diagnostics available.",
+                                   font=(Typography.UI_FONT, 12), text_color=Colors.TEXT_MUTED)
+                lbl.pack(expand=True)
 
         except ImportError:
             pass
