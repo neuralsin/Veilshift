@@ -1,0 +1,104 @@
+{
+  "model_id": "QT223-1783515259",
+  "version": "2.0",
+  "created_at": 1783515259.5509994,
+  "last_updated_at": 1783515410.5439167,
+  "is_trained": true,
+  "total_samples_seen": 12000,
+  "regime": "Low Observability",
+  "sensor_names": [
+    "radar",
+    "thermal",
+    "acoustic"
+  ],
+  "n_features": 20,
+  "feature_names": [
+    "radar_peak_snr",
+    "radar_cfar_exceedances",
+    "radar_doppler_spread",
+    "radar_target_to_clutter",
+    "radar_clutter_skewness",
+    "radar_clutter_kurtosis",
+    "thermal_peak_contrast",
+    "thermal_edge_energy",
+    "thermal_hot_spot_area",
+    "thermal_contrast_to_noise",
+    "thermal_kurtosis",
+    "acoustic_tonal_power",
+    "acoustic_broadband_power",
+    "acoustic_spectral_kurtosis",
+    "acoustic_tonal_to_broadband",
+    "acoustic_peak_frequency",
+    "acoustic_temporal_variability",
+    "cross_radar_thermal_agreement",
+    "cross_thermal_acoustic_agreement",
+    "cross_max_sensor_score_spread"
+  ],
+  "selected_feature_indices": [
+    4,
+    6,
+    14
+  ],
+  "fusion_weights": {
+    "radar": 0.08182028075583218,
+    "thermal": 0.1906863713457953,
+    "acoustic": 0.7274933478983725
+  },
+  "threshold": 0.507875057409689,
+  "fisher_objective": -0.00017801748856955486,
+  "n_training_runs": 2,
+  "n_incremental_updates": 1,
+  "training_history": [
+    {
+      "timestamp": 1783515259.5706267,
+      "regime": "Low Observability",
+      "n_samples": 6000,
+      "auc": 0.570527888888889,
+      "f1": 0.018414995067412038,
+      "precision": 0.6829268292682927,
+      "recall": 0.009333333333333334,
+      "false_alarm_rate": 0.004333333333333333,
+      "fusion_weights": {
+        "radar": 0.41681530210350415,
+        "thermal": 0.38480600072846743,
+        "acoustic": 0.1983786971680283
+      },
+      "threshold": 0.5307082846982099,
+      "incremental": false
+    },
+    {
+      "timestamp": 1783515410.5469933,
+      "regime": "Stealth",
+      "n_samples": 6000,
+      "auc": 0.5275617777777778,
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "false_alarm_rate": 0.0,
+      "fusion_weights": {
+        "radar": 0.41681530210350415,
+        "thermal": 0.38480600072846743,
+        "acoustic": 0.1983786971680283
+      },
+      "threshold": 0.5307082846982099,
+      "incremental": true
+    }
+  ],
+  "sensor_classifiers": {
+    "radar": {
+      "type": "LogisticRegression",
+      "n_coefs": 6,
+      "intercept": -7.468117588524648e-07
+    },
+    "thermal": {
+      "type": "LogisticRegression",
+      "n_coefs": 5,
+      "intercept": 0.011988839745776737
+    },
+    "acoustic": {
+      "type": "LogisticRegression",
+      "n_coefs": 6,
+      "intercept": -0.0006097480740938691
+    }
+  }
+}

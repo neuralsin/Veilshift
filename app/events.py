@@ -41,6 +41,7 @@ class EventType(Enum):
     CONTRIBUTION_RESULT_UPDATED = auto()
     DEGRADATION_RESULT_UPDATED = auto()
     SCALING_RESULT_UPDATED = auto()
+    MODEL_RESULT_UPDATED = auto()
 
     # Sensor model training
     SENSOR_MODELS_TRAINED = auto()

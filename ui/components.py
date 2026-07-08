@@ -166,6 +166,7 @@ class SensorCard(ctk.CTkFrame):
         metrics.grid(row=2, column=0, columnspan=2, sticky="sew",
                      padx=Spacing.LG, pady=(Spacing.SM, Spacing.LG))
 
+        self._metric_labels = {}
         for col, (lbl, val, color) in enumerate([
             ("Score", score, Colors.TEXT_PRIMARY),
             ("Weight", weight, sensor_color),
@@ -180,7 +181,37 @@ class SensorCard(ctk.CTkFrame):
             l = ctk.CTkLabel(f, text=val, font=(Typography.MONO_FONT, 14),
                              text_color=color)
             l.pack(anchor="w")
+            self._metric_labels[lbl] = l
 
+    def update_metrics(self, status: Optional[str] = None, score: Optional[str] = None, 
+                       weight: Optional[str] = None, rank: Optional[str] = None, snr: Optional[str] = None):
+        """Update the metrics displayed on the card."""
+        if status is not None:
+            status_colors = {
+                "Online": Colors.SUCCESS,
+                "Degraded": Colors.WARNING,
+                "Failed": Colors.CRITICAL,
+                "Pending": Colors.TEXT_MUTED,
+            }
+            # Also handle upper case values for matching
+            color = Colors.SUCCESS if status.upper() in ["ONLINE", "COMPLETED", "PASS"] else \
+                    Colors.WARNING if status.upper() in ["DEGRADED", "CHECK", "RUNNING"] else \
+                    Colors.CRITICAL if status.upper() in ["FAILED", "ERROR"] else \
+                    Colors.TEXT_MUTED
+            self._status.configure(text=status.upper(), text_color=color)
+        
+        if score is not None and "Score" in self._metric_labels:
+            self._metric_labels["Score"].configure(text=score)
+        
+        if weight is not None and "Weight" in self._metric_labels:
+            self._metric_labels["Weight"].configure(text=weight)
+            
+        if rank is not None and "Rank" in self._metric_labels:
+            self._metric_labels["Rank"].configure(text=rank)
+            
+        if snr is not None and "SNR dB" in self._metric_labels:
+            color = Colors.WARNING if snr.startswith("-") else Colors.TEXT_PRIMARY
+            self._metric_labels["SNR dB"].configure(text=snr, text_color=color)
 
 # ============================================================
 # STATUS PILL — inline status indicator

@@ -499,6 +499,10 @@ class ExperimentState:
     sensor_scores: Optional[Dict[str, np.ndarray]] = None
     active_model_fusion_weights: Optional[Dict[str, float]] = None
 
+    # Persistent Detection Model
+    detection_model: Optional[Any] = None  # Type: DetectionModel
+    detection_model_path: Optional[str] = None
+
     # Evaluation fusion weights (mean ± SD across OOF folds)
     evaluation_fusion_weights: Optional[Dict[str, float]] = None
     evaluation_fusion_weights_std: Optional[Dict[str, float]] = None

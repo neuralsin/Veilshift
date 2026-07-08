@@ -54,8 +54,8 @@ class MissionControlPage(ctk.CTkScrollableFrame):
 
         self._regime_value_label = ctk.CTkLabel(
             top_bar_inner, text="STEALTH (0%)",
-            font=(Typography.MONO_FONT, 12, "bold"),
-            text_color=Colors.ACCENT_CYAN
+            font=(Typography.UI_FONT, 16, "bold"),
+            text_color=Colors.RADAR
         )
         self._regime_value_label.pack(side="left")
 
@@ -245,6 +245,50 @@ class MissionControlPage(ctk.CTkScrollableFrame):
                 bar.set(0.0)
                 label.configure(text="—")
 
+        # Update Sensor Cards
+        if exp.status == ModuleStatus.COMPLETED:
+            # Sort weights to find rank
+            w_items = []
+            if exp.fusion_result.weights:
+                w_items = sorted(exp.fusion_result.weights.items(), key=lambda x: x[1], reverse=True)
+            ranks = {k: str(i+1) for i, (k, v) in enumerate(w_items)}
+
+            def format_score(sensor_scores):
+                if sensor_scores is not None and len(sensor_scores) > 0:
+                    return f"{np.mean(sensor_scores):.3f}"
+                return "—"
+            
+            # Radar
+            radar_score = format_score(exp.sensor_scores.get("radar") if exp.sensor_scores else None)
+            radar_weight = f"{exp.fusion_result.weights.get('radar', 0.0):.3f}" if exp.fusion_result.weights else "—"
+            radar_snr = f"{exp.radar_result.snr_db:.1f}" if exp.radar_result.snr_db is not None else "—"
+            self._radar_card.update_metrics(
+                status="Online", score=radar_score, weight=radar_weight, 
+                rank=ranks.get('radar', "—"), snr=radar_snr
+            )
+            
+            # Thermal
+            thermal_score = format_score(exp.sensor_scores.get("thermal") if exp.sensor_scores else None)
+            thermal_weight = f"{exp.fusion_result.weights.get('thermal', 0.0):.3f}" if exp.fusion_result.weights else "—"
+            thermal_snr = f"{exp.thermal_result.thermal_snr:.1f}" if exp.thermal_result.thermal_snr is not None else "—"
+            self._thermal_card.update_metrics(
+                status="Online", score=thermal_score, weight=thermal_weight, 
+                rank=ranks.get('thermal', "—"), snr=thermal_snr
+            )
+            
+            # Acoustic
+            acoustic_score = format_score(exp.sensor_scores.get("acoustic") if exp.sensor_scores else None)
+            acoustic_weight = f"{exp.fusion_result.weights.get('acoustic', 0.0):.3f}" if exp.fusion_result.weights else "—"
+            acoustic_snr = f"{exp.acoustic_result.signal_excess_db:.1f}" if exp.acoustic_result.signal_excess_db is not None else "—"
+            self._acoustic_card.update_metrics(
+                status="Online", score=acoustic_score, weight=acoustic_weight, 
+                rank=ranks.get('acoustic', "—"), snr=acoustic_snr
+            )
+        else:
+            self._radar_card.update_metrics(status="Pending", score="—", weight="—", rank="—", snr="—")
+            self._thermal_card.update_metrics(status="Pending", score="—", weight="—", rank="—", snr="—")
+            self._acoustic_card.update_metrics(status="Pending", score="—", weight="—", rank="—", snr="—")
+
         # Inference text
         self._update_inference(exp)
 
@@ -273,6 +317,15 @@ class MissionControlPage(ctk.CTkScrollableFrame):
                 lines.append(f"Fused AUC (OOF): {exp.metrics_result.auc}")
             elif exp.metrics_result.auc:
                 lines.append(f"⚠ LEGACY IN-SAMPLE AUC: {exp.metrics_result.auc}")
+
+            if hasattr(exp, 'detection_model') and exp.detection_model is not None:
+                lines.append("")
+                lines.append(f"--- PERSISTENT MODEL ---")
+                lines.append(f"Model ID: {exp.detection_model.model_id}")
+                lines.append(f"Total samples trained: {exp.detection_model.total_samples_seen}")
+                incremental = sum(1 for r in exp.detection_model.training_history if r.incremental)
+                lines.append(f"Updates: {len(exp.detection_model.training_history)} ({incremental} incremental)")
+                lines.append(f"Saved to: {exp.detection_model_path}")
 
             if exp.fusion_result.solver:
                 lines.append(f"Solver: {exp.fusion_result.solver}")

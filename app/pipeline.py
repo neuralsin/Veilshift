@@ -598,7 +598,7 @@ def run_full_pipeline(
     exp.detection_model_path = saved_path
 
     event_bus.publish(Event(
-        event_type=EventType.MODULE_COMPLETED,
+        event_type=EventType.MODEL_RESULT_UPDATED,
         source="MODEL",
         message=f"Model saved: {model.total_samples_seen} samples, "
                 f"{len(model.training_history)} runs "
