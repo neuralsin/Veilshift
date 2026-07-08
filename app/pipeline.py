@@ -517,6 +517,96 @@ def run_full_pipeline(
     ))
 
     # ========================================================
+    # STAGE 11: Persistent Model — Train/Update & Save
+    # ========================================================
+    stage_num = 10
+    stage_progress("SAVING MODEL", 0.0, "Training persistent detection model")
+
+    from science.model.detection_model import DetectionModel
+
+    # Model save path
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    models_dir = os.path.join(project_root, "models")
+    model_path = os.path.join(models_dir, "qt223_detection_model.pkl")
+
+    # Check if a model already exists for incremental update
+    existing_model = None
+    if os.path.exists(model_path):
+        try:
+            existing_model = DetectionModel.load(model_path)
+            stage_progress("SAVING MODEL", 0.2, f"Loaded existing model ({existing_model.total_samples_seen} samples seen)")
+        except Exception:
+            existing_model = None
+
+    if existing_model is not None and existing_model.is_trained:
+        # Incremental update with new data
+        stage_progress("SAVING MODEL", 0.4, "Incremental update with new data")
+        update_result = existing_model.update(
+            X_new=feature_matrix,
+            y_new=labels,
+            regime=exp.target_regime.value,
+            seed=seed,
+        )
+
+        # Update fusion weights from this run's optimization
+        if exp.fusion_result.weights_array is not None:
+            existing_model.fusion_weights = exp.fusion_result.weights_array.copy()
+            existing_model.fusion_weights_dict = exp.fusion_result.weights.copy() if exp.fusion_result.weights else None
+        if exp.fusion_result.threshold is not None:
+            existing_model.threshold = exp.fusion_result.threshold
+
+        model = existing_model
+
+        stage_progress("SAVING MODEL", 0.6,
+                        f"Updated model — {model.total_samples_seen} total samples, "
+                        f"{sum(1 for r in model.training_history if r.incremental)} updates")
+    else:
+        # Fresh training
+        stage_progress("SAVING MODEL", 0.4, "Training new model from scratch")
+        model = DetectionModel()
+
+        metrics_dict = {
+            "auc": oof_result.auc if oof_result.auc else 0.0,
+            "f1": oof_result.aggregate_metrics.f1 if oof_result.aggregate_metrics else 0.0,
+            "precision": oof_result.aggregate_metrics.precision if oof_result.aggregate_metrics else 0.0,
+            "recall": oof_result.aggregate_metrics.recall if oof_result.aggregate_metrics else 0.0,
+            "far": oof_result.aggregate_metrics.false_alarm_rate if oof_result.aggregate_metrics else 0.0,
+        }
+
+        model.train(
+            X=feature_matrix,
+            y=labels,
+            feature_names=feature_names,
+            sensor_feature_counts=sensor_feature_counts,
+            fusion_weights=exp.fusion_result.weights_array if exp.fusion_result.weights_array is not None else np.array([1/3, 1/3, 1/3]),
+            threshold=exp.fusion_result.threshold if exp.fusion_result.threshold is not None else 0.5,
+            regime=exp.target_regime.value,
+            seed=seed,
+            selected_indices=exp.feature_result.selected_indices,
+            fisher_objective=exp.fusion_result.fisher_objective if exp.fusion_result.fisher_objective else 0.0,
+            metrics=metrics_dict,
+        )
+
+        stage_progress("SAVING MODEL", 0.6, f"Model trained — {model.total_samples_seen} samples")
+
+    # Save model to disk
+    stage_progress("SAVING MODEL", 0.8, f"Saving to {model_path}")
+    saved_path = model.save(model_path)
+
+    # Store model reference on experiment
+    exp.detection_model = model
+    exp.detection_model_path = saved_path
+
+    event_bus.publish(Event(
+        event_type=EventType.MODULE_COMPLETED,
+        source="MODEL",
+        message=f"Model saved: {model.total_samples_seen} samples, "
+                f"{len(model.training_history)} runs "
+                f"({sum(1 for r in model.training_history if r.incremental)} incremental)",
+        data={"experiment_id": exp_id, "model_path": saved_path},
+    ))
+
+    # ========================================================
     # COMPLETED
     # ========================================================
     exp.status = ModuleStatus.COMPLETED
@@ -524,3 +614,4 @@ def run_full_pipeline(
     stage_progress("COMPLETED", 1.0, f"Experiment {exp_id} complete — OOF AUC={oof_result.auc:.4f}")
 
     return exp
+
