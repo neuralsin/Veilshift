@@ -45,16 +45,19 @@ class MissionControlPage(ctk.CTkScrollableFrame):
         top_bar_inner = ctk.CTkFrame(top_bar, fg_color="transparent")
         top_bar_inner.pack(fill="x", padx=Spacing.LG, pady=Spacing.LG)
         
-        ctk.CTkLabel(top_bar_inner, text="TARGET REGIME PRESET:", font=(Typography.UI_FONT, 11, "bold"),
-                     text_color=Colors.TEXT_SECONDARY).pack(side="left", padx=(0, Spacing.SM))
-                     
-        self._regime_select = ctk.CTkOptionMenu(
-            top_bar_inner, values=["STEALTH (Low Observability Presets)", "CONVENTIONAL (High SNR Presets)"],
-            font=(Typography.UI_FONT, 11), fg_color=Colors.BG_DARKEST, button_color=Colors.BG_ELEVATED,
-            dropdown_fg_color=Colors.BG_CARD, text_color=Colors.TEXT_PRIMARY, width=280, height=Spacing.INPUT_HEIGHT,
-            command=self._on_regime_changed,
+        self._regime_label = ctk.CTkLabel(
+            top_bar_inner, text="OBSERVABILITY LEVEL:", 
+            font=(Typography.UI_FONT, 11, "bold"),
+            text_color=Colors.TEXT_SECONDARY
         )
-        self._regime_select.pack(side="left")
+        self._regime_label.pack(side="left", padx=(0, Spacing.SM))
+
+        self._regime_value_label = ctk.CTkLabel(
+            top_bar_inner, text="STEALTH (0%)",
+            font=(Typography.MONO_FONT, 12, "bold"),
+            text_color=Colors.ACCENT_CYAN
+        )
+        self._regime_value_label.pack(side="left")
 
         # ROW 1: 4 Metric cards
         metrics_row = ctk.CTkFrame(container, fg_color="transparent")
@@ -195,11 +198,16 @@ class MissionControlPage(ctk.CTkScrollableFrame):
         # Target regime
         self._target_regime.update_value(exp.target_regime.value.upper())
 
-        # Sync regime select preset dropdown
-        if exp.target_regime == TargetRegime.STEALTH:
-            self._regime_select.set("STEALTH (Low Observability Presets)")
-        elif exp.target_regime == TargetRegime.CONVENTIONAL:
-            self._regime_select.set("CONVENTIONAL (High SNR Presets)")
+        # Sync regime label with current regime
+        regime_map = {
+            TargetRegime.STEALTH: "STEALTH (0%)",
+            TargetRegime.NEAR_BACKGROUND: "NEAR-BACKGROUND (25%)",
+            TargetRegime.LOW_OBSERVABILITY: "LOW OBSERVABILITY (50%)",
+            TargetRegime.REDUCED_SIGNATURE: "REDUCED SIGNATURE (75%)",
+            TargetRegime.CONVENTIONAL: "CONVENTIONAL (100%)",
+        }
+        label_text = regime_map.get(exp.target_regime, exp.target_regime.value.upper())
+        self._regime_value_label.configure(text=label_text)
 
         # Active modalities
         active = exp.active_modalities
@@ -273,15 +281,6 @@ class MissionControlPage(ctk.CTkScrollableFrame):
 
         self._inference_text.configure(state="disabled")
 
-    def _on_regime_changed(self, choice: str):
-        from app.state import TargetRegime
-        exp = self._app.app_state.current_experiment
-        if "STEALTH" in choice:
-            exp.apply_regime_preset(TargetRegime.STEALTH)
-        else:
-            exp.apply_regime_preset(TargetRegime.CONVENTIONAL)
-        
-        self._app.propagate_experiment_state()
 
     def _export_model(self):
         from app.state import TaskType, TargetRegime

@@ -1,6 +1,6 @@
 {
   "version": "QT-2.23-PRODUCTION",
-  "timestamp": "2026-07-08T11:32:16.428994+00:00",
+  "timestamp": "2026-07-08T11:40:29.716258+00:00",
   "regime": "CONVENTIONAL",
   "seed": 101,
   "n_samples": 500,
@@ -148,5 +148,5 @@
     "Acoustic": 6
   },
   "n_total_features": 17,
-  "export_time_s": 2.4518141746520996
+  "export_time_s": 2.395801067352295
 }

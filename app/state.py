@@ -35,7 +35,10 @@ class ModuleStatus(Enum):
 
 class TargetRegime(Enum):
     CONVENTIONAL = "Conventional"
-    STEALTH = "Low Observability"
+    REDUCED_SIGNATURE = "Reduced Signature"
+    LOW_OBSERVABILITY = "Low Observability"
+    NEAR_BACKGROUND = "Near-Background"
+    STEALTH = "Stealth"
     CUSTOM = "Custom"
 
 
@@ -538,39 +541,102 @@ class ExperimentState:
     def apply_regime_preset(self, regime: TargetRegime) -> None:
         """
         Apply a regime preset, updating all sensor configs at once.
+        5-step observability sweep from 'AI God' to 'AI Blind'.
 
-        CONVENTIONAL: high-SNR observable targets (AUC should approach 1.0)
-        STEALTH: sub-noise unobservable targets (AUC near chance is EXPECTED)
+        Key physics insight: the thermal sensor's feature extractor (peak_contrast
+        over 64 target pixels) separates trivially at even per-pixel SNR > 1.
+        Therefore, for intermediate regimes, thermal emissivity must be set
+        within ~0.001 of the background-matching value:
+            eps_match(T) = eps_bg * T_bg^4 / T^4
+        so that thermal features are indistinguishable from noise.
+
+        The AUC gradient then comes from:
+          - Radar: gradual SNR decay via RCS and range
+          - Acoustic: gradual signal excess decay via source level and range
         """
         self.target_regime = regime
 
         if regime == TargetRegime.CONVENTIONAL:
-            # Manual Appendix B conventional defaults
+            # 100% — loud, hot, obvious. All sensors blazing.
             self.radar_config.rcs_m2 = 10.0
             self.radar_config.range_m = 10000.0
-            self.radar_config.target_regime = TargetRegime.CONVENTIONAL
+            self.radar_config.target_regime = regime
 
             self.thermal_config.target_temperature_K = 400.0
             self.thermal_config.target_emissivity = 0.9
-            self.thermal_config.target_regime = TargetRegime.CONVENTIONAL
+            self.thermal_config.target_regime = regime
 
             self.acoustic_config.source_level_dB = 160.0
             self.acoustic_config.range_m = 500.0
-            self.acoustic_config.target_regime = TargetRegime.CONVENTIONAL
+            self.acoustic_config.target_regime = regime
+
+        elif regime == TargetRegime.REDUCED_SIGNATURE:
+            # 75% — thermal managed, radar/acoustic still detectable
+            # Radar: RCS=5m², R=15km → SNR ≈ +5dB (clearly detectable)
+            # Thermal: T=340K, eps≈0.503 → background-matched, SNR<1
+            # Acoustic: SL=150dB, R=1000m → SE ≈ +10dB (detectable)
+            self.radar_config.rcs_m2 = 5.0
+            self.radar_config.range_m = 15000.0
+            self.radar_config.target_regime = regime
+
+            self.thermal_config.target_temperature_K = 340.0
+            self.thermal_config.target_emissivity = 0.503
+            self.thermal_config.target_regime = regime
+
+            self.acoustic_config.source_level_dB = 150.0
+            self.acoustic_config.range_m = 1000.0
+            self.acoustic_config.target_regime = regime
+
+        elif regime == TargetRegime.LOW_OBSERVABILITY:
+            # 50% — all sensors marginal, fusion critical
+            # Radar: RCS=0.5m², R=25km → SNR ≈ -8dB (weak)
+            # Thermal: T=320K, eps≈0.6412 → background-matched, SNR<0.1
+            # Acoustic: SL=130dB, R=3000m → SE ≈ -5dB (marginal)
+            self.radar_config.rcs_m2 = 0.5
+            self.radar_config.range_m = 25000.0
+            self.radar_config.target_regime = regime
+
+            self.thermal_config.target_temperature_K = 320.0
+            self.thermal_config.target_emissivity = 0.6412
+            self.thermal_config.target_regime = regime
+
+            self.acoustic_config.source_level_dB = 130.0
+            self.acoustic_config.range_m = 3000.0
+            self.acoustic_config.target_regime = regime
+
+        elif regime == TargetRegime.NEAR_BACKGROUND:
+            # 25% — almost invisible, all sensors at noise floor
+            # Radar: RCS=0.05m², R=40km → SNR ≈ -27dB (noise)
+            # Thermal: T=312K, eps≈0.7093 → background-matched, SNR<0.05
+            # Acoustic: SL=115dB, R=4500m → SE ≈ -22dB (noise)
+            self.radar_config.rcs_m2 = 0.05
+            self.radar_config.range_m = 40000.0
+            self.radar_config.target_regime = regime
+
+            self.thermal_config.target_temperature_K = 312.0
+            self.thermal_config.target_emissivity = 0.7093
+            self.thermal_config.target_regime = regime
+
+            self.acoustic_config.source_level_dB = 115.0
+            self.acoustic_config.range_m = 4500.0
+            self.acoustic_config.target_regime = regime
 
         elif regime == TargetRegime.STEALTH:
-            # Manual Appendix B stealth defaults (with corrected emissivity)
+            # 0% — physically background-matched, all sensors blind
+            # Radar: RCS=0.01m², R=50km → SNR ≈ -38dB
+            # Thermal: T=310K, eps=0.7275 → ΔM≈0, SNR≈0
+            # Acoustic: SL=110dB, R=5000m → SE ≈ -28dB
             self.radar_config.rcs_m2 = 0.01
             self.radar_config.range_m = 50000.0
-            self.radar_config.target_regime = TargetRegime.STEALTH
+            self.radar_config.target_regime = regime
 
             self.thermal_config.target_temperature_K = 310.0
-            self.thermal_config.target_emissivity = 0.7275  # Scientifically corrected
-            self.thermal_config.target_regime = TargetRegime.STEALTH
+            self.thermal_config.target_emissivity = 0.7275
+            self.thermal_config.target_regime = regime
 
             self.acoustic_config.source_level_dB = 110.0
             self.acoustic_config.range_m = 5000.0
-            self.acoustic_config.target_regime = TargetRegime.STEALTH
+            self.acoustic_config.target_regime = regime
 
 
 # ============================================================

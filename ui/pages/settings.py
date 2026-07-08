@@ -3,7 +3,7 @@ from __future__ import annotations
 import customtkinter as ctk
 from ui.theme.tokens import Colors, Typography, Spacing, Radii
 from ui.components import SectionFrame, ParameterField, ActionButton
-from app.state import ExperimentState
+from app.state import ExperimentState, TargetRegime
 
 
 class SettingsPage(ctk.CTkScrollableFrame):
@@ -15,6 +15,29 @@ class SettingsPage(ctk.CTkScrollableFrame):
     def _build_ui(self):
         container = ctk.CTkFrame(self, fg_color="transparent")
         container.pack(fill="both", expand=True, padx=Spacing.PAGE_PADDING, pady=Spacing.PAGE_PADDING)
+
+        # Observability Level (Regime Selection)
+        obs_section = SectionFrame(container, title="Observability Level")
+        obs_section.pack(fill="x", pady=(0, Spacing.GRID_GAP))
+
+        ctk.CTkLabel(obs_section.content, text="TARGET SIGNATURE REGIME",
+                     font=(Typography.UI_FONT, 11, "bold"),
+                     text_color=Colors.TEXT_SECONDARY).pack(anchor="w", padx=Spacing.XS, pady=(4, 2))
+
+        self._regime_select = ctk.CTkOptionMenu(
+            obs_section.content,
+            values=[
+                "CONVENTIONAL (100%)",
+                "REDUCED SIGNATURE (75%)",
+                "LOW OBSERVABILITY (50%)",
+                "NEAR-BACKGROUND (25%)",
+                "STEALTH (0%)",
+            ],
+            font=(Typography.UI_FONT, 11), fg_color=Colors.BG_DARKEST, button_color=Colors.BG_ELEVATED,
+            dropdown_fg_color=Colors.BG_CARD, text_color=Colors.TEXT_PRIMARY, height=Spacing.INPUT_HEIGHT,
+        )
+        self._regime_select.set("STEALTH (0%)")
+        self._regime_select.pack(fill="x", pady=2)
 
         # Global Settings
         global_section = SectionFrame(container, title="Global Settings")
@@ -116,6 +139,17 @@ class SettingsPage(ctk.CTkScrollableFrame):
 
     def refresh(self, exp: ExperimentState):
         from app.state import FeatureSelectionMethod
+
+        # Sync regime selector
+        regime_map = {
+            TargetRegime.STEALTH: "STEALTH (0%)",
+            TargetRegime.NEAR_BACKGROUND: "NEAR-BACKGROUND (25%)",
+            TargetRegime.LOW_OBSERVABILITY: "LOW OBSERVABILITY (50%)",
+            TargetRegime.REDUCED_SIGNATURE: "REDUCED SIGNATURE (75%)",
+            TargetRegime.CONVENTIONAL: "CONVENTIONAL (100%)",
+        }
+        self._regime_select.set(regime_map.get(exp.target_regime, "STEALTH (0%)"))
+
         self._seed.set_value(str(exp.seed))
         self._samples.set_value(str(exp.radar_config.num_samples))
         self._alpha.set_value(str(exp.feature_config.alpha))
@@ -141,6 +175,18 @@ class SettingsPage(ctk.CTkScrollableFrame):
         from app.state import FeatureSelectionMethod
         exp = self._app.app_state.current_experiment
         try:
+            # Apply regime preset
+            regime_str = self._regime_select.get()
+            regime_lookup = {
+                "CONVENTIONAL (100%)": TargetRegime.CONVENTIONAL,
+                "REDUCED SIGNATURE (75%)": TargetRegime.REDUCED_SIGNATURE,
+                "LOW OBSERVABILITY (50%)": TargetRegime.LOW_OBSERVABILITY,
+                "NEAR-BACKGROUND (25%)": TargetRegime.NEAR_BACKGROUND,
+                "STEALTH (0%)": TargetRegime.STEALTH,
+            }
+            regime = regime_lookup.get(regime_str, TargetRegime.STEALTH)
+            exp.apply_regime_preset(regime)
+
             exp.seed = int(self._seed.value)
             exp.radar_config.num_samples = int(self._samples.value)
             exp.thermal_config.num_samples = int(self._samples.value)
@@ -170,3 +216,6 @@ class SettingsPage(ctk.CTkScrollableFrame):
             exp.fusion_config.target_far = float(self._target_far.value)
         except (ValueError, AttributeError):
             pass
+
+        # Propagate changes to all pages
+        self._app.propagate_experiment_state()
