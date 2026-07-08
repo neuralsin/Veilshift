@@ -2,9 +2,9 @@
   "model_id": "QT223-1783515259",
   "version": "2.0",
   "created_at": 1783515259.5509994,
-  "last_updated_at": 1783530911.0232186,
+  "last_updated_at": 1783533361.346338,
   "is_trained": true,
-  "total_samples_seen": 42000,
+  "total_samples_seen": 102000,
   "regime": "Low Observability",
   "sensor_names": [
     "radar",
@@ -40,14 +40,14 @@
     14
   ],
   "fusion_weights": {
-    "radar": 0.4296914286681301,
-    "thermal": 0.27328397952715144,
-    "acoustic": 0.2970245918047186
+    "radar": 0.30561290873637564,
+    "thermal": 0.6771998531045293,
+    "acoustic": 0.017187238159095067
   },
-  "threshold": 0.5184433461661307,
+  "threshold": 0.49129654582191823,
   "fisher_objective": -0.00017801748856955486,
-  "n_training_runs": 4,
-  "n_incremental_updates": 3,
+  "n_training_runs": 5,
+  "n_incremental_updates": 4,
   "training_history": [
     {
       "timestamp": 1783515259.5706267,
@@ -116,23 +116,40 @@
       },
       "threshold": 0.5266638536369568,
       "incremental": true
+    },
+    {
+      "timestamp": 1783533361.4324055,
+      "regime": "Low Observability",
+      "n_samples": 60000,
+      "auc": 0.7658135544444443,
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "false_alarm_rate": 0.0,
+      "fusion_weights": {
+        "radar": 0.4296914286681301,
+        "thermal": 0.27328397952715144,
+        "acoustic": 0.2970245918047186
+      },
+      "threshold": 0.5184433461661307,
+      "incremental": true
     }
   ],
   "sensor_classifiers": {
     "radar": {
       "type": "LogisticRegression",
       "n_coefs": 6,
-      "intercept": 7.764169724155088e-05
+      "intercept": 7.273352743177733e-05
     },
     "thermal": {
       "type": "LogisticRegression",
       "n_coefs": 5,
-      "intercept": 0.02447698640830224
+      "intercept": 0.08720585667799592
     },
     "acoustic": {
       "type": "LogisticRegression",
       "n_coefs": 6,
-      "intercept": -0.0015873739686378242
+      "intercept": -0.0008490274294016849
     }
   }
 }

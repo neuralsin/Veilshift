@@ -323,10 +323,16 @@ class MissionControlPage(ctk.CTkScrollableFrame):
             self._inference_text.insert("0.0", "Run the pipeline to generate system inference.")
         else:
             lines = []
-            if exp.fusion_result.weights:
-                w = exp.fusion_result.weights
+            if exp.evaluation_fusion_weights:
+                w = exp.evaluation_fusion_weights
                 ranked = sorted(w.items(), key=lambda x: x[1], reverse=True)
                 lines.append(f"Fusion weight order: {ranked[0][0]} ({ranked[0][1]:.3f}) > "
+                           f"{ranked[1][0]} ({ranked[1][1]:.3f}) > "
+                           f"{ranked[2][0]} ({ranked[2][1]:.3f}).")
+            elif exp.fusion_result.weights:
+                w = exp.fusion_result.weights
+                ranked = sorted(w.items(), key=lambda x: x[1], reverse=True)
+                lines.append(f"Fusion weight order (Legacy): {ranked[0][0]} ({ranked[0][1]:.3f}) > "
                            f"{ranked[1][0]} ({ranked[1][1]:.3f}) > "
                            f"{ranked[2][0]} ({ranked[2][1]:.3f}).")
 
@@ -335,7 +341,7 @@ class MissionControlPage(ctk.CTkScrollableFrame):
                            f"({'strong' if exp.radar_result.snr_db > 0 else 'weak'})")
 
             if exp.has_valid_oof:
-                lines.append(f"Evaluation: 5-Fold Stratified OOF")
+                lines.append(f"Evaluation: {exp.evaluation_config.n_folds}-Fold Stratified OOF")
                 lines.append(f"Fused AUC (OOF): {exp.metrics_result.auc}")
             elif exp.metrics_result.auc:
                 lines.append(f"⚠ LEGACY IN-SAMPLE AUC: {exp.metrics_result.auc}")
