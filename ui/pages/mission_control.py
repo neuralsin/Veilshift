@@ -12,6 +12,10 @@ from typing import Any, Optional
 
 import customtkinter as ctk
 import numpy as np
+import matplotlib
+matplotlib.use("TkAgg")
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from ui.theme.tokens import Colors, Typography, Spacing, Radii
 from ui.components import MetricCard, SensorCard, SectionFrame, EmptyState, ActionButton
@@ -246,21 +250,36 @@ class MissionControlPage(ctk.CTkScrollableFrame):
                 label.configure(text="—")
 
         # Update Sensor Cards
+        if exp.status in [ModuleStatus.COMPLETED, ModuleStatus.FAILED]:
+            self._run_btn.set_running(False)
+            
         if exp.status == ModuleStatus.COMPLETED:
+            from sklearn.metrics import roc_auc_score
+
+            # Use OOF weights as the single source of truth for the dashboard
+            weights = exp.evaluation_fusion_weights or exp.fusion_result.weights or {}
+            
             # Sort weights to find rank
-            w_items = []
-            if exp.fusion_result.weights:
-                w_items = sorted(exp.fusion_result.weights.items(), key=lambda x: x[1], reverse=True)
+            w_items = sorted(weights.items(), key=lambda x: x[1], reverse=True)
             ranks = {k: str(i+1) for i, (k, v) in enumerate(w_items)}
 
-            def format_score(sensor_scores):
-                if sensor_scores is not None and len(sensor_scores) > 0:
-                    return f"{np.mean(sensor_scores):.3f}"
+            def calculate_oof_auc(sensor_name):
+                if exp.oof_result and exp.oof_result.sensor_scores and sensor_name in exp.oof_result.sensor_scores:
+                    try:
+                        return f"{roc_auc_score(exp.oof_result.true_labels, exp.oof_result.sensor_scores[sensor_name]):.3f}"
+                    except ValueError:
+                        return "0.500"
+                # Fallback to active model probabilities if OOF is missing
+                if exp.sensor_scores and sensor_name in exp.sensor_scores and exp.labels is not None:
+                    try:
+                        return f"{roc_auc_score(exp.labels, exp.sensor_scores[sensor_name]):.3f}"
+                    except ValueError:
+                        return "0.500"
                 return "—"
             
             # Radar
-            radar_score = format_score(exp.sensor_scores.get("radar") if exp.sensor_scores else None)
-            radar_weight = f"{exp.fusion_result.weights.get('radar', 0.0):.3f}" if exp.fusion_result.weights else "—"
+            radar_score = calculate_oof_auc("radar")
+            radar_weight = f"{weights.get('radar', 0.0):.3f}" if weights else "—"
             radar_snr = f"{exp.radar_result.snr_db:.1f}" if exp.radar_result.snr_db is not None else "—"
             self._radar_card.update_metrics(
                 status="Online", score=radar_score, weight=radar_weight, 
@@ -268,8 +287,8 @@ class MissionControlPage(ctk.CTkScrollableFrame):
             )
             
             # Thermal
-            thermal_score = format_score(exp.sensor_scores.get("thermal") if exp.sensor_scores else None)
-            thermal_weight = f"{exp.fusion_result.weights.get('thermal', 0.0):.3f}" if exp.fusion_result.weights else "—"
+            thermal_score = calculate_oof_auc("thermal")
+            thermal_weight = f"{weights.get('thermal', 0.0):.3f}" if weights else "—"
             thermal_snr = f"{exp.thermal_result.thermal_snr:.1f}" if exp.thermal_result.thermal_snr is not None else "—"
             self._thermal_card.update_metrics(
                 status="Online", score=thermal_score, weight=thermal_weight, 
@@ -277,17 +296,20 @@ class MissionControlPage(ctk.CTkScrollableFrame):
             )
             
             # Acoustic
-            acoustic_score = format_score(exp.sensor_scores.get("acoustic") if exp.sensor_scores else None)
-            acoustic_weight = f"{exp.fusion_result.weights.get('acoustic', 0.0):.3f}" if exp.fusion_result.weights else "—"
+            acoustic_score = calculate_oof_auc("acoustic")
+            acoustic_weight = f"{weights.get('acoustic', 0.0):.3f}" if weights else "—"
             acoustic_snr = f"{exp.acoustic_result.signal_excess_db:.1f}" if exp.acoustic_result.signal_excess_db is not None else "—"
             self._acoustic_card.update_metrics(
                 status="Online", score=acoustic_score, weight=acoustic_weight, 
                 rank=ranks.get('acoustic', "—"), snr=acoustic_snr
             )
+            
+            self._draw_sparklines(exp)
         else:
             self._radar_card.update_metrics(status="Pending", score="—", weight="—", rank="—", snr="—")
             self._thermal_card.update_metrics(status="Pending", score="—", weight="—", rank="—", snr="—")
             self._acoustic_card.update_metrics(status="Pending", score="—", weight="—", rank="—", snr="—")
+            self._draw_sparklines(exp)
 
         # Inference text
         self._update_inference(exp)
@@ -334,6 +356,36 @@ class MissionControlPage(ctk.CTkScrollableFrame):
 
         self._inference_text.configure(state="disabled")
 
+    def _draw_sparklines(self, exp: ExperimentState):
+        """Render simple matplotlib sparklines inside the sensor cards."""
+        for card, sensor in [(self._radar_card, "radar"), (self._thermal_card, "thermal"), (self._acoustic_card, "acoustic")]:
+            for w in card._viz_frame.winfo_children():
+                w.destroy()
+            
+            if exp.status != ModuleStatus.COMPLETED:
+                continue
+                
+            fig, ax = plt.subplots(figsize=(3, 1.2), facecolor=Colors.BG_DARKEST)
+            ax.set_facecolor(Colors.BG_DARKEST)
+            
+            if sensor == "radar" and exp.radar_result.range_profile is not None:
+                x = np.arange(len(exp.radar_result.range_profile))
+                ax.plot(x, 20 * np.log10(exp.radar_result.range_profile + 1e-12), color=Colors.RADAR, linewidth=1)
+                ax.margins(0)
+            elif sensor == "thermal" and exp.thermal_result.thermal_frame is not None:
+                ax.imshow(exp.thermal_result.thermal_frame, aspect="auto", cmap="inferno")
+            elif sensor == "acoustic" and exp.acoustic_result.time_series is not None:
+                ts = exp.acoustic_result.time_series[:2000]
+                ax.plot(ts, color=Colors.ACOUSTIC, linewidth=0.5)
+                ax.margins(0)
+                
+            ax.axis('off')
+            fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
+            
+            canvas = FigureCanvasTkAgg(fig, master=card._viz_frame)
+            canvas.draw()
+            canvas.get_tk_widget().pack(fill="both", expand=True)
+            plt.close(fig)
 
     def _export_model(self):
         from app.state import TaskType, TargetRegime

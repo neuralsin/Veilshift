@@ -168,7 +168,7 @@ class SensorCard(ctk.CTkFrame):
 
         self._metric_labels = {}
         for col, (lbl, val, color) in enumerate([
-            ("Score", score, Colors.TEXT_PRIMARY),
+            ("OOF AUC", score, Colors.TEXT_PRIMARY),
             ("Weight", weight, sensor_color),
             ("Rank", rank, Colors.TEXT_PRIMARY),
             ("SNR dB", snr, Colors.WARNING if snr.startswith("-") else Colors.TEXT_PRIMARY),
@@ -200,8 +200,8 @@ class SensorCard(ctk.CTkFrame):
                     Colors.TEXT_MUTED
             self._status.configure(text=status.upper(), text_color=color)
         
-        if score is not None and "Score" in self._metric_labels:
-            self._metric_labels["Score"].configure(text=score)
+        if score is not None and "OOF AUC" in self._metric_labels:
+            self._metric_labels["OOF AUC"].configure(text=score)
         
         if weight is not None and "Weight" in self._metric_labels:
             self._metric_labels["Weight"].configure(text=weight)

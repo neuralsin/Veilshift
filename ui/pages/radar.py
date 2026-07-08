@@ -235,8 +235,9 @@ class RadarPage(ctk.CTkFrame):
     def refresh(self, exp: ExperimentState):
         """Refresh radar page from experiment state."""
         result = exp.radar_result
-        if result.status == ModuleStatus.COMPLETED:
+        if result.status in [ModuleStatus.COMPLETED, ModuleStatus.FAILED]:
             self._run_btn.set_running(False)
+        if result.status == ModuleStatus.COMPLETED:
             self._update_live_values(exp)
             self._update_inference(exp)
             self._update_charts(exp)

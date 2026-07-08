@@ -14,6 +14,7 @@ weights correctly set, sidebar fixed, workspace fills remaining space.
 from __future__ import annotations
 import sys
 import os
+import pickle
 from typing import Any, Callable, Dict, Optional
 
 import customtkinter as ctk
@@ -66,6 +67,9 @@ class AppShell(ctk.CTk):
 
         # Register all pages (lazy import)
         self._register_pages()
+
+        # Load persistent state if available
+        self._load_state()
 
         # Navigate to System Overview
         self.navigate_to("System Overview")
@@ -440,6 +444,26 @@ class AppShell(ctk.CTk):
             self._sidebar.pack(side="left", fill="y", before=self._topbar)
             self.attributes("-fullscreen", False)
 
+    def _load_state(self):
+        """Load experiment state from disk so settings persist across reboots."""
+        path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".qt223_settings.pkl")
+        if os.path.exists(path):
+            try:
+                with open(path, "rb") as f:
+                    self.app_state.current_experiment = pickle.load(f)
+            except Exception as e:
+                print(f"Warning: Could not load saved settings: {e}")
+
+    def _save_state(self):
+        """Save experiment state to disk so settings persist."""
+        path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".qt223_settings.pkl")
+        try:
+            with open(path, "wb") as f:
+                pickle.dump(self.app_state.current_experiment, f)
+        except Exception as e:
+            print(f"Warning: Could not save settings: {e}")
+
     def on_closing(self):
+        self._save_state()
         self.task_manager.shutdown()
         self.destroy()

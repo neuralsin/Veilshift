@@ -2,9 +2,9 @@
   "model_id": "QT223-1783515259",
   "version": "2.0",
   "created_at": 1783515259.5509994,
-  "last_updated_at": 1783515410.5439167,
+  "last_updated_at": 1783530911.0232186,
   "is_trained": true,
-  "total_samples_seen": 12000,
+  "total_samples_seen": 42000,
   "regime": "Low Observability",
   "sensor_names": [
     "radar",
@@ -40,14 +40,14 @@
     14
   ],
   "fusion_weights": {
-    "radar": 0.08182028075583218,
-    "thermal": 0.1906863713457953,
-    "acoustic": 0.7274933478983725
+    "radar": 0.4296914286681301,
+    "thermal": 0.27328397952715144,
+    "acoustic": 0.2970245918047186
   },
-  "threshold": 0.507875057409689,
+  "threshold": 0.5184433461661307,
   "fisher_objective": -0.00017801748856955486,
-  "n_training_runs": 2,
-  "n_incremental_updates": 1,
+  "n_training_runs": 4,
+  "n_incremental_updates": 3,
   "training_history": [
     {
       "timestamp": 1783515259.5706267,
@@ -82,23 +82,57 @@
       },
       "threshold": 0.5307082846982099,
       "incremental": true
+    },
+    {
+      "timestamp": 1783529906.9620514,
+      "regime": "Low Observability",
+      "n_samples": 10000,
+      "auc": 0.7612552800000001,
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "false_alarm_rate": 0.0,
+      "fusion_weights": {
+        "radar": 0.08182028075583218,
+        "thermal": 0.1906863713457953,
+        "acoustic": 0.7274933478983725
+      },
+      "threshold": 0.507875057409689,
+      "incremental": true
+    },
+    {
+      "timestamp": 1783530911.0312197,
+      "regime": "Low Observability",
+      "n_samples": 20000,
+      "auc": 0.76401191,
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "false_alarm_rate": 0.0,
+      "fusion_weights": {
+        "radar": 0.4296914286681301,
+        "thermal": 0.27328397952715144,
+        "acoustic": 0.2970245918047186
+      },
+      "threshold": 0.5266638536369568,
+      "incremental": true
     }
   ],
   "sensor_classifiers": {
     "radar": {
       "type": "LogisticRegression",
       "n_coefs": 6,
-      "intercept": -7.468117588524648e-07
+      "intercept": 7.764169724155088e-05
     },
     "thermal": {
       "type": "LogisticRegression",
       "n_coefs": 5,
-      "intercept": 0.011988839745776737
+      "intercept": 0.02447698640830224
     },
     "acoustic": {
       "type": "LogisticRegression",
       "n_coefs": 6,
-      "intercept": -0.0006097480740938691
+      "intercept": -0.0015873739686378242
     }
   }
 }

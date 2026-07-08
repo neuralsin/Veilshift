@@ -172,7 +172,7 @@ class DetectionModel:
         for s in self.sensor_names:
             sl = self.sensor_feature_slices[s]
             clf = LogisticRegression(
-                max_iter=2000, random_state=seed, warm_start=True,
+                max_iter=1000, random_state=seed, warm_start=True,
                 C=1.0, solver='lbfgs',
             )
             clf.fit(X_scaled[:, sl], y)
