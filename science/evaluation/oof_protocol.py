@@ -482,18 +482,31 @@ def run_oof_evaluation(
 
         selected_names = [feature_names[i] for i in selected_indices] if feature_names else []
 
-        # ----- Fit sensor classifiers on inner_train ONLY -----
+        # ----- Map globally-selected indices onto each sensor's own columns -----
+        # QUBO selection runs over the full (radar+thermal+acoustic+cross) matrix,
+        # but each sensor's classifier should only see ITS OWN selected columns.
+        # If QUBO picked none of a sensor's features this fold, fall back to that
+        # sensor's full slice so the classifier still has something to fit on.
+        selected_set = set(selected_indices)
+        sensor_local_cols = {}
+        for s in sensor_names:
+            sl = sensor_slices[s]
+            local = [i - sl.start for i in selected_set if sl.start <= i < sl.stop]
+            sensor_local_cols[s] = sorted(local) if local else list(range(sl.stop - sl.start))
+
+        # ----- Fit sensor classifiers on inner_train ONLY, using selected features -----
         inner_sensor_scores_train = {}
         inner_sensor_scores_val = {}
         classifiers = {}
 
         for s in sensor_names:
             sl = sensor_slices[s]
+            cols = sensor_local_cols[s]
             clf = LogisticRegression(max_iter=1000, random_state=seed)
-            clf.fit(X_inner_train[:, sl], y_inner_train)
+            clf.fit(X_inner_train[:, sl][:, cols], y_inner_train)
             classifiers[s] = clf
-            inner_sensor_scores_train[s] = clf.predict_proba(X_inner_train[:, sl])[:, 1]
-            inner_sensor_scores_val[s] = clf.predict_proba(X_inner_val[:, sl])[:, 1]
+            inner_sensor_scores_train[s] = clf.predict_proba(X_inner_train[:, sl][:, cols])[:, 1]
+            inner_sensor_scores_val[s] = clf.predict_proba(X_inner_val[:, sl][:, cols])[:, 1]
 
         # ----- Fusion optimization on inner_train scores -----
         train_scores_matrix = np.column_stack(
@@ -517,19 +530,21 @@ def run_oof_evaluation(
             fused_inner_val, y_inner_val, target_far
         )
 
-        # ----- Refit classifiers on full outer_train -----
+        # ----- Refit classifiers on full outer_train (same selected features) -----
         for s in sensor_names:
             sl = sensor_slices[s]
+            cols = sensor_local_cols[s]
             clf = LogisticRegression(max_iter=1000, random_state=seed)
-            clf.fit(X_outer_train[:, sl], y_outer_train)
+            clf.fit(X_outer_train[:, sl][:, cols], y_outer_train)
             classifiers[s] = clf
 
         # ----- Score outer_test with refitted classifiers -----
         test_sensor_scores_fold = {}
         for s in sensor_names:
             sl = sensor_slices[s]
+            cols = sensor_local_cols[s]
             test_sensor_scores_fold[s] = classifiers[s].predict_proba(
-                X_outer_test[:, sl]
+                X_outer_test[:, sl][:, cols]
             )[:, 1]
 
         # Apply fusion weights (from inner optimization) + threshold
